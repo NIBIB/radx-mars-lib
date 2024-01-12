@@ -1,7 +1,18 @@
+/**
+ * The CodingSystem class is used to encapsulate the known coding systems
+ * specific to the MARs hubs and to thus simplify the implementation of correct
+ * HL7 messages.
+ */
 export default class CodingSystem {
   private readonly _code: string
   private readonly _version: string
 
+  /**
+   * Constructs a CodingSystem object.  Known CodingSystem objects are
+   * represented as static properties of the CodingSystem class.
+   * @param code The short-hand definition of the coding type.
+   * @param version The version of the coding type
+   */
   constructor (code: string, version: string) {
     this._code = code
     this._version = version
@@ -26,9 +37,9 @@ export default class CodingSystem {
   static readonly HL720189_210: CodingSystem = new CodingSystem('HL720189', '2.1.0')
   /**
    * Generates an HL7 compatible string of the code system.  BEWARE, this
-   * representation assumes tyhere are 3 fields/subfields separating the
-   * code system identifier and the version.  Do NOT use this if you are
-   * unsure of the gapping.
+   * representation assumes there are 3 fields/subfields separating the code
+   * system identifier and the version.  Do NOT use this if you are unsure of
+   * the gapping.
    *
    * @param separator the separator between the elements.  Typically '^'
    * @returns S string representation of the code system.

@@ -4,6 +4,12 @@ export default class PatientPhoneContact implements PatientContact {
   private readonly _areaCode: string
   private readonly _localNumber: string
 
+  /**
+   * Constructs a {@link PatientPhoneContact} encapsulating a patient's phone
+   * contact information.
+   * @param areaCode area code of the phone number
+   * @param localNumber the phone number w/o area code
+   */
   constructor (
     areaCode: string,
     localNumber: string
@@ -12,6 +18,7 @@ export default class PatientPhoneContact implements PatientContact {
     this._localNumber = localNumber
   }
 
+  /** Identfies the {@link PatientContact} as a phone number */
   public readonly code = 'PH'
 
   public get areaCode (): string {
@@ -34,6 +41,7 @@ export default class PatientPhoneContact implements PatientContact {
     ].join(separator)
   }
 
+  /** A static object used to indicate the patient has no phone contact */
   static readonly NoPhoneContact: PatientContact = new PatientPhoneContact(
     '111',
     '1111111'

@@ -20,7 +20,6 @@ import PatientEmailContact from './models/PatientEmailContact'
 import PatientPhoneContact from './models/PatientPhoneContact'
 import PatientRace from './models/PatientRace'
 import PatientSex from './models/PatientSex'
-import RequiredAddress from './models/RequiredAddress'
 import TestResultAbnormalFlagsCode from './models/TestResultAbnormalFlagsCode'
 import TestResultCode from './models/TestResultCode'
 
@@ -40,7 +39,6 @@ export {
   PatientRace,
   PatientSex,
   PerformingOrganization,
-  RequiredAddress,
   SpecimenCollectionType,
   Test,
   TestKit,

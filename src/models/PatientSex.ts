@@ -1,6 +1,12 @@
 import CodingSystem from './CodingSystem'
 import CodedValue from './CodedValue'
 
+/**
+ * The PatientSex class represents a {@link CodedValue} encapsulating coded
+ * sex information as defined at
+ * https://terminology.hl7.org/5.1.0/CodeSystem-v2-0001.html.
+ * This class defines no constructor.
+ */
 export default class PatientSex extends CodedValue {
   static readonly Female: PatientSex = new PatientSex(
     'F',

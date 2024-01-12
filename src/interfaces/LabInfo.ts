@@ -5,35 +5,27 @@
  */
 
 import type HierarchicDesignator from '../models/HierarchicDesignator'
-import type RequiredAddress from '../models/RequiredAddress'
 
 export default abstract class LabInfo {
-  private readonly _sendingApplicationIdentifier: HierarchicDesignator
+  private readonly _sendingSystemIdentifier: HierarchicDesignator
   private readonly _sendingFacilityIdentifier: HierarchicDesignator
-  private readonly _address: RequiredAddress
 
   // TODO: Test to ensure all id format matches the id type format.
   // Can move this into the ID type classes, presumably, as part of the
   // constructor validation.
   constructor (
-    sendingApplicationIdentifier: HierarchicDesignator,
-    sendingFacilityIdentifier: HierarchicDesignator,
-    address: RequiredAddress
+    sendingSystemIdentifier: HierarchicDesignator,
+    sendingFacilityIdentifier: HierarchicDesignator
   ) {
-    this._sendingApplicationIdentifier = sendingApplicationIdentifier
+    this._sendingSystemIdentifier = sendingSystemIdentifier
     this._sendingFacilityIdentifier = sendingFacilityIdentifier
-    this._address = address
   }
 
-  get sendingApplicationIdentifier (): HierarchicDesignator {
-    return this._sendingApplicationIdentifier
+  get sendingSystemIdentifier (): HierarchicDesignator {
+    return this._sendingSystemIdentifier
   }
 
   get sendingFacilityIdentifier (): HierarchicDesignator {
     return this._sendingFacilityIdentifier
-  }
-
-  get address (): RequiredAddress {
-    return this._address
   }
 }

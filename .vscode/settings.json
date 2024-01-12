@@ -1,14 +1,22 @@
 {
 	"peacock.remoteColor": "#00518f",
+	"eslint.enable": true,
 	"files.exclude": {
 		"dist": true,
 		"node_modules": true
 	},
 	"editor.tabSize": 2,
 	"editor.insertSpaces": true,
+	"editor.formatOnSave": false,
 	"editor.rulers": [
-		{"column": 80, "color": "#ffff00"},
-		{"column": 120, "color": "#ff0000"}
+		{
+			"column": 80,
+			"color": "#ffff00"
+		},
+		{
+			"column": 120,
+			"color": "#ff0000"
+		}
 	],
 	"workbench.colorCustomizations": {
 		"activityBar.activeBackground": "#006ec2",

@@ -1,20 +1,33 @@
 import type MarsHubProvider from '../interfaces/MarsHubProvider'
 import type LabInfo from '../models/MarsLabInfo'
-import type TestInfo from '../models/Test'
+import type Test from '../models/Test'
 import type TestResult from '../models/TestResult'
 import HL7MessageBuilder from '../utils/hl7/HL7MessageBuilder'
 import type TestKit from '../models/TestKit'
 import type Patient from '../models/Patient'
 
+/**
+ * The LabResultSubmitter class handles the construction of an HL7 message and
+ * the delivery of results via the {@link submitResult} method to a RADx MARS
+ * Hub that has implemented the {@link MarsHubProvider} interface.
+ */
 export default class LabResultSubmitter {
   provider: MarsHubProvider
   labInfo: LabInfo
-  labTestInfo: TestInfo
+  labTestInfo: Test
 
+  /**
+   * Constructs the {@link LabResultSubmitter} class
+   * @param provider The {@link MarsHubProvider} to which
+   * {@link TestResult} classes are submitted.
+   * @param labInfo - The lab info defined as a {@link LabInfo} class.
+   * @param labTestInfo Information about the type of test being taken as
+   * defined in a {@link TestInfo} object.
+   */
   constructor (
     provider: MarsHubProvider,
     labInfo: LabInfo,
-    labTestInfo: TestInfo
+    labTestInfo: Test
   ) {
     this.provider = provider
     this.labInfo = labInfo

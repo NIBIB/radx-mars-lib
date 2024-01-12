@@ -1,23 +1,40 @@
+/* eslint-disable max-len */
+import CodingSystem from './CodingSystem'
+
 /**
  * Represents the type of specimen collected for a test.  These values map into
  * the SPM segment of a generated HL7 message along with information about the
- * {TestKit}.
+ * {@link TestKit}. For any given test, the {@link SpecimenCollectionType} class
+ * defining it is identified in the PowerBI dashboard located at
+ * https://app.powerbi.com/view?r=eyJrIjoiZWZjZDQyYjktNGFiMC00YWZkLTg2NTYtMjg2ODEyZWM1ZTViIiwidCI6IjQzNGUwYWVkLWVmODItNDU2OC1hMDQ5LTNiMTdhZGMwOGRkZCIsImMiOjF9&pageName=ReportSection3147535a75468ee60d16
+ * and corresponds to the HL7 ELR 2.5.1 fields SPM-4.1, SPM-4.2, and SPM-4.3.
  *
+ * There should be no need to construct this class directly.  The user should,
+ * instead, use the associated static properties defined in this class.
  * @param {string} conceptId - The concept of the specimen, mapped to SPM-4.1.
  * @param {string} preferredTerm - The preferred term when dealing with the
  * specimen type. Interestingly enough, it's not used much.
  * @param {string} fullySpecifiedName - The fully specified name of the
  * specimen type.  mapped to SPM-4.2.
  */
-
-import CodingSystem from './CodingSystem'
-
 export default class SpecimenCollectionType {
   private readonly _conceptId: string
   private readonly _preferredTerm: string
   private readonly _fullySpecifiedName: string
   private readonly _codingSystem: CodingSystem
 
+  /**
+   * Constructs a {@link SpecimenCollectionType} class.  This class represents
+   * the specimen collection type as defined in the RADx MARS PowerBI dashboard.
+   * Construction of a {@link SpecimenCollectionType} should be rare as all
+   * PHIN VADS are defined as static members of this class.
+   * @param conceptId the concept id.  Corresponds to SPM-4.1.
+   * @param preferredTerm the preferred term as defined by PHIN VADS
+   * @param fullySpecifiedName the fully specifed name from PHIN VADS.
+   * Corresponds to SPM-4.2
+   * @param codingSystem - The coding system.  Currently SNOMED CT.  Corresponds
+   * to SPM-4.3
+   */
   constructor (
     conceptId: string,
     preferredTerm: string,

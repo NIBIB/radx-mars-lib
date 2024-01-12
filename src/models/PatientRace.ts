@@ -1,7 +1,22 @@
 import CodingSystem from './CodingSystem'
 import CodedValue from './CodedValue'
 
+/**
+ * The PatientRace class represents a {@link CodedValue} encapsulating coded
+ * race information as defined at
+ * https://terminology.hl7.org/ValueSet-v2-0005.html.
+ */
 export default class PatientRace extends CodedValue {
+  /**
+   * Constructs a new PatientRace object.  Should not be needed often, if at all
+   * as the values currently identified and described at
+   * https://terminology.hl7.org/ValueSet-v2-0005.html are represented as static
+   * objects of the PatientRace class itself.
+   * @param code code representing the race
+   * @param description description of the value identified with the {code}
+   * parameter.
+   * @param codingSystem the system in which the race is to be encoded.
+   */
   constructor (
     code: string,
     description: string,

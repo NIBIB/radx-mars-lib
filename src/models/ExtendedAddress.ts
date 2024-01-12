@@ -1,7 +1,8 @@
 import { type NullableString, safeNullableString } from './NullableString'
 
 /**
- *
+ * Represents an HL7 ExtendedAddress object.  Supports construction and
+ * serialization of said object.
  */
 export default class ExtendedAddress {
   private readonly _street: NullableString
@@ -13,12 +14,12 @@ export default class ExtendedAddress {
 
   /**
    *
-   * @param street
-   * @param street2
-   * @param city
-   * @param state
-   * @param zip
-   * @param {string} county - The county for the user.  This is to be chosen
+   * @param zip - Required zipcode of the address.
+   * @param street - Optional line 1 of the street address.
+   * @param street2 - Optional line 2 of the street address.
+   * @param city - optional city of the address.
+   * @param state - optional state of the adderss.
+   * @param county - optional county for the user.  This is to be chosen
    * based on zipcode and matched against the PHINVADS table to find the
    * appropriate value field.
    */

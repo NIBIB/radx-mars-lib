@@ -9,10 +9,6 @@ import PatientPhoneContact from '../../models/PatientPhoneContact'
 import CodingSystem from '../../models/CodingSystem'
 import { type NullableString } from '../../models/NullableString'
 import type PatientContact from '../../models/PatientContact'
-// eslint-disable-next-line max-len
-// const OBR22_1_TESTRESULTDATERELEASED = 'OBR22_1 Test result date released {YYYYMMDDHHMMSS[+/-ZZZZ]}'
-// eslint-disable-next-line max-len
-// const OBX19_TESTANALYSISDATE = 'OBX19 Test Analysis date {YYYYMMDDHHMMSS[+/-ZZZZ]}, Date of mobile device interpretation'
 
 /**
  * The {HL7MessageBuilder} class constructs an HL7 message from the provided
@@ -29,8 +25,6 @@ import type PatientContact from '../../models/PatientContact'
  * @param {TestResult} testResult - information about the test result
  */
 
-// TODO: Import the receiver information based on the MARS Hub, so
-// we need to incorporate that somehow.
 export default class HL7MessageBuilder {
   _hubProvider: MarsHubProvider
   _labInfo: LabInfo
@@ -38,7 +32,6 @@ export default class HL7MessageBuilder {
   _testKit: TestKit
   _patient: Patient
   _testResults: TestResult[]
-  // batchIdentifier: string;
 
   constructor (
     hubProvider: MarsHubProvider,
@@ -47,7 +40,6 @@ export default class HL7MessageBuilder {
     testKit: TestKit,
     labTestSubjects: Patient,
     labTestResults: TestResult[]
-    // batchIdentifier: string
   ) {
     this._hubProvider = hubProvider
     this._labInfo = labInfo
@@ -55,50 +47,45 @@ export default class HL7MessageBuilder {
     this._patient = labTestSubjects
     this._testResults = labTestResults
     this._testKit = testKit
-    // this.batchIdentifier = batchIdentifier;
   }
 
   buildMessage (): string {
-    const mshSegment = this.buildMSHSegment()
+    const mshSegment = this.buildMshSegment()
 
-    // TODO: Generate multiple result segments.
-    // for (let i = 0; i < this.labTestResults.length; i++) {
-    // const subject = this._patient
-    // const result = this._labTestResults[0]
-    const pidSegment = this.buildPIDSegment()
-    const spmSegment = this.buildSPMSegment()
-    const orcSegment = this.buildORCSegmentOTC()
-    const obxSegments = this.buildOBXSegments()
-    const sftSegment = this.buildSFTSegment()
-    const obrSegment = this.buildOBRSegment()
+    const pidSegment = this.buildPidSegment()
+    const spmSegment = this.buildSpmSegment()
+    const orcSegment = this.buildOrcSegmentOtc()
+    const obxSegments = this.buildObxSegments()
+    const sftSegment = this.buildSftSegment()
+    const obrSegment = this.buildObrSegment()
 
-    return [mshSegment, sftSegment, pidSegment, orcSegment, obrSegment, ...obxSegments, spmSegment].join('\n')
-    // }
-
-    // return message
+    return [
+      mshSegment,
+      sftSegment,
+      pidSegment,
+      orcSegment,
+      obrSegment,
+      ...obxSegments,
+      spmSegment
+    ].join('\n')
   }
 
-  private buildMSHSegment (): string {
+  private buildMshSegment (): string {
     const dateAndTimeOfMessageString = formatDate(new Date())
-    // eslint-disable-next-line max-len
-    // 3.1 name of app.  Appears to be the .PROD or .TEST from the routing
-    // information.  May be different for ReportStream.  Also used everywhere.
-    // < 20 characters.
-    // 3.2 is used EVERYWHERE.
     // TODO: Test we cannot have an app name >= 20 characters
     // TODO: Test we have the required configuration values at start.
     const mshSegment = [
       'MSH',
       '^~\\&',
-      this._labInfo.sendingApplicationIdentifier.asHl7String(),
+      this._labInfo.sendingSystemIdentifier.asHl7String(),
       this._labInfo.sendingFacilityIdentifier.asHl7String(),
       this._hubProvider.receivingApplicationIdentifier.asHl7String(),
       this._hubProvider.receivingFacilityIdentifier.asHl7String(),
       formatDate(new Date()), // .toISOString(),
       '',
       'ORU^R01^ORU_R01',
-      `${dateAndTimeOfMessageString}_${this._testKit.id}`, // Batch identifier MSH10
-      (this._hubProvider.isUsingProduction) ? 'P' : 'T', // P = Production, T = Test.  Can get from provider info.
+      `${dateAndTimeOfMessageString}_${this._testKit.id}`,
+      (this._hubProvider.isUsingProduction) ? 'P' : 'T',
       '2.5.1',
       '',
       '',
@@ -114,7 +101,7 @@ export default class HL7MessageBuilder {
     return mshSegment
   }
 
-  private buildSFTSegment (): string {
+  private buildSftSegment (): string {
     const SFT1 = 'Meadows Design, LLC'
     const SFT2 = '1.0.0'
     const SFT3 = 'RADx MARS Hub API'
@@ -131,9 +118,7 @@ export default class HL7MessageBuilder {
     ].join('|')
   }
 
-  private buildPIDSegment (): string {
-    // TODO: Test: 22 PID segments
-    // Build PID5
+  private buildPidSegment (): string {
     let Pid5PatientName: NullableString = null
     if (this._patient.name == null ||
       this._patient.name.lastName.trim().length === 0
@@ -167,7 +152,7 @@ export default class HL7MessageBuilder {
       '1',
       '',
       // Unique patient id less than 100 chars.
-      `${this._patient.id}^^^&${this._labInfo.sendingApplicationIdentifier.universalId}&ISO^PI`,
+      `${this._patient.id}^^^&${this._labInfo.sendingSystemIdentifier.universalId}&ISO^PI`,
       '',
       Pid5PatientName ?? '~^^^^^^S', // PID5_1 is ~^^^^^^S if blank.
       '', // PID6
@@ -193,11 +178,11 @@ export default class HL7MessageBuilder {
   }
 
   // ...
-  private buildSPMSegment (): string {
+  private buildSpmSegment (): string {
     const spmSegment = [
       'SPM',
       '1',
-      `^${this._testKit.id}&&${this._labInfo.sendingApplicationIdentifier.universalId}&ISO`,
+      `^${this._testKit.id}&&${this._labInfo.sendingSystemIdentifier.universalId}&ISO`,
       '',
       this._test.specimenCollectionType.asHl7String(),
       '', // 5
@@ -212,24 +197,25 @@ export default class HL7MessageBuilder {
       '', // `14`,
       '', // `15`,
       '', // `16`,
-      // TODO: Are these the same things?  Format these dates.
       formatDate(this._testKit.collectedDate),
       formatDate(this._testKit.receivedDate)
-      // `${SPM17_1_SPECIMENCOLLECTEDDATE}`,
-      // `${SPM18_1_SPECIMENRECEIVEDDATE}`// `18`,
     ].join('|')
 
     return spmSegment
   }
 
-  private buildORCSegmentOTC (): string {
+  /**
+   * Builds the ORC segment of an HL7 2.5.1 ELR message for an OTC submission.
+   * @returns a string representing the ORC segment
+   */
+  private buildOrcSegmentOtc (): string {
     const phoneContact: PatientContact =
       this._patient.patientContacts.find(p => p.code === 'PH') ?? PatientPhoneContact.NoPhoneContact
     const orcSegment = [
       'ORC',
       'RE',
       '',
-      `${this._testKit.id}^^${this._labInfo.sendingApplicationIdentifier.universalId}^ISO`,
+      `${this._testKit.id}^^${this._labInfo.sendingSystemIdentifier.universalId}^ISO`,
       '',
       '', // 5
       '',
@@ -238,7 +224,7 @@ export default class HL7MessageBuilder {
       '',
       '',
       '',
-      `^^${this._test.performingOrganization.name}`, // 12
+      `^^${this._test.performingOrganization.type}`, // 12
       '',
       '', // `14`,
       '', // `15`,
@@ -247,30 +233,25 @@ export default class HL7MessageBuilder {
       '', // `18`,
       '', // `19`,
       '', // `20`,
-      this._test.performingOrganization.name, // `${ORC12_3_OTCPROVIDERNAME}`,//`21`,
-      (this._patient.address ?? this._labInfo.address).asHl7String('^'),
-      // eslint-disable-next-line max-len
-      // `${PID11_1_OPT_STREET1}^${PID11_2_OPT_STREET2}^${PID11_3_OPT_CITY}^${PID11_4_OPT_STATE}^${PID11_5_OPT_ZIP}^^^^${PID11_9_OPT_COUNTY}`, // `22`,
+      this._test.performingOrganization.type,
+      this._patient.address,
       phoneContact.asHl7String('^'),
-      // eslint-disable-next-line max-len
-      // `^^^^^${PID13_6_OPT_PHONEAREA ?? '111'}^${PID13_7_OPT_PHONELOCAL ?? '1111111'}`, // `23`,
       ''// `24`,
     ].join('|')
 
     return orcSegment
   }
 
-  private buildOBRSegment (): string {
+  private buildObrSegment (): string {
     const obrSegment = [
       'OBR',
       '1',
       '',
-      `${this._testKit.id}^^${this._labInfo.sendingApplicationIdentifier.universalId}^ISO`,
-      this._test.asHl7String(), // `${this._test.testId}^${this._test.testName}^LN^^^^${OBR4_7_LOINCVERSION}`,
+      `${this._testKit.id}^^${this._labInfo.sendingSystemIdentifier.universalId}^ISO`,
+      this._test.asHl7String(),
       '', // 5
       '',
       formatDate(this._testKit.collectedDate),
-      // `${SPM17_1_SPECIMENCOLLECTEDDATE}`,
       '',
       '',
       '',
@@ -279,16 +260,13 @@ export default class HL7MessageBuilder {
       '',
       '', // `14`,
       '', // `15`,
-      `^^${this._test.performingOrganization.name}`, // 16
-      // eslint-disable-next-line max-len
-      // `NPI^ORDERINGPROVIDERLASTNAME^OBR16_3_TESTSPECIFICFIRSTNAME^^^^^^&2.16.840.1.113883.4.6&ISO^^^^^TESTRESULTDATE`,// 16 for prescription,
+      `^^${this._test.performingOrganization.type}`, // 16
       '', // `17`,
       '', // `18`,
       '', // `19`,
       '', // `20`,
       '', // `21`,
       formatDate(this._testResults[0].determinationDate),
-      // `${OBR22_1_TESTRESULTDATERELEASED}`, // `22`,
       '',
       '',
       'F' // 25
@@ -297,51 +275,39 @@ export default class HL7MessageBuilder {
     return obrSegment
   }
 
-  private buildOBXSegments (): string[] {
+  private buildObxSegments (): string[] {
     const resultSegments: string[] = []
     // For result in results.
     const obxSegment = [
       'OBX',
       '1',
       'CWE',
-      // OBX is NOT the same as OBR.  So fix this.
-      // eslint-disable-next-line max-len
-      // `${OBR4_1_TESTORDEREDCODE}^${OBR4_2_TESTORDEREDDESC}^LN^^^^${OBR4_7_LOINCVERSION}`,
       this._testResults[0].asHl7String(),
       '',
       this._testResults[0].testResultCode.asHl7String('^'),
-      // eslint-disable-next-line max-len
-      // `${OBX5_1_TESTRESULTCODE}^${OBX5_2_TESTRESULTDESC}^${CodingSystem.SCT_20210301.asHl7String()}`, // 5
       '',
       '',
       this._testResults[0].testResultAbnormalFlagsCode.asHl7String('^'),
-      // eslint-disable-next-line max-len
-      // `${OBX8_1_TESTRESULTABNORMALFLAGCODE}^${OBX8_2_TESTRESULTABNORMALFLAGDESC}^${CodingSystem.HL70078_251.asHl7String()}`, // 8
       '',
       '', // 10
       'F',
       '',
       '',
       '', // `14`,
-      this._test.performingOrganization.id, // `${OBX15_1_PRODUCERID}`,//`15`,
+      this._test.performingOrganization.id,
       '', // `16`,
       `${this._testResults[0].deviceIdentifier}^^${CodingSystem.N99ELR_VUNKNOWN.asHl7String('^')}`,
-      // `${OBX17_1_DEVICEIDENTIFIER}^^99ELR^Vunknown`, // `17`,
       '', // `18`,
       formatDate(this._testResults[0].determinationDate),
-      // `${OBX19_TESTANALYSISDATE}`, // `19`,
       '', // `20`,
       '', // `21`,
       '', // `22`,
       // eslint-disable-next-line max-len
-      `${this._test.performingOrganization.name}^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^${this._test.performingOrganization.id}`,
-      this._test.performingOrganization.address, // `${OBX24_PERFORMORGADDRESS}`,
+      `${this._test.performingOrganization.type}^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^${this._test.performingOrganization.id}`,
+      this._test.performingOrganization.address,
       '' // 25
     ].join('|')
 
-    // TODO: For multi-plex tests, do the other results -- COVID first, mind
-    // you. But we still need multiplex results for the OBX pieces.  How to do
-    // this?
     resultSegments.push(obxSegment)
 
     const obxAgeSegment = [
@@ -360,7 +326,7 @@ export default class HL7MessageBuilder {
       '',
       '',
       '', // `14`,
-      this._test.performingOrganization.id, // `${OBX15_1_PRODUCERID}`,//`15`,
+      this._test.performingOrganization.id,
       '', // `16`,
       '', // `17`,
       '', // `18`,
@@ -369,8 +335,8 @@ export default class HL7MessageBuilder {
       '', // `21`,
       '', // `22`,
       // eslint-disable-next-line max-len
-      `${this._test.performingOrganization.name}^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^${this._test.performingOrganization.id}`,
-      this._test.performingOrganization.address, // `${OBX24_PERFORMORGADDRESS}`,
+      `${this._test.performingOrganization.type}^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^${this._test.performingOrganization.id}`,
+      this._test.performingOrganization.address,
       '', // 25
       '', // 26
       '', // 27
@@ -388,7 +354,6 @@ export default class HL7MessageBuilder {
     // and do some sort of enum check.
     const didPatientReportSymptomatic = false
     if (!didPatientReportSymptomatic) {
-      // TODO: What if they're not but answer -- is that valuable? Assume yes.
       return resultSegments
     }
 
@@ -416,7 +381,7 @@ export default class HL7MessageBuilder {
       '',
       '',
       '', // `14`,
-      this._test.performingOrganization.id, // `${OBX15_1_PRODUCERID}`,//`15`,
+      this._test.performingOrganization.id,
       '', // `16`,
       '', // `17`,
       '', // `18`,
@@ -425,8 +390,8 @@ export default class HL7MessageBuilder {
       '', // `21`,
       '', // `22`,
       // eslint-disable-next-line max-len
-      `${this._test.performingOrganization.name}^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^${this._test.performingOrganization.id}`,
-      this._test.performingOrganization.address, // `${OBX24_PERFORMORGADDRESS}`,
+      `${this._test.performingOrganization.type}^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^${this._test.performingOrganization.id}`,
+      this._test.performingOrganization.address,
       '', // 25
       '', // 26
       '', // 27
@@ -458,7 +423,7 @@ export default class HL7MessageBuilder {
       '',
       '',
       '', // `14`,
-      this._test.performingOrganization.id, // `${OBX15_1_PRODUCERID}`,//`15`,
+      this._test.performingOrganization.id,
       '', // `16`,
       '', // `17`,
       '', // `18`,
@@ -467,7 +432,7 @@ export default class HL7MessageBuilder {
       '', // `21`,
       '', // `22`,
       // eslint-disable-next-line max-len
-      `${this._test.performingOrganization.name}^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^${this._test.performingOrganization.id}`,
+      `${this._test.performingOrganization.type}^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^${this._test.performingOrganization.id}`,
       this._test.performingOrganization.address, // `${OBX24_PERFORMORGADDRESS}`,
       '', // 25
       '', // 26
@@ -481,6 +446,3 @@ export default class HL7MessageBuilder {
     return resultSegments
   }
 }
-
-// TODO: Should validate required fields
-// TODO: Include SPM segment

@@ -6,7 +6,15 @@ import CodedValue from './CodedValue'
  * a specific test result. For MARS hubs, the values for these fields should
  * be pulled from the Test-Specific HL7V2 fields values sheet linked from the
  * NIH HL7 v2 implementeation guide.
- * These values indicate the presence or absence of detection for a spec
+ * These values indicate the presence or absence of detection for a specimen
+ * collection.
+ *
+ * The values this class represents can be found for most RADx MARS Hub
+ * recognized tests in the RADx MARS PowerBI dashboard in the OBX[1]-5 field
+ * for a specific test.
+ *
+ * There is great parity between this class and the
+ * {@link TestResultAbnormalFlagsCode} class.
  */
 export default class TestResultCode extends CodedValue {
   /**

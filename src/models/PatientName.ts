@@ -2,12 +2,17 @@
  * Constructs a patient name object, usually flattened into a single field in
  * an HL7 segment.
  */
-
 export default class PatientName {
   private readonly _firstName: string
   private readonly _middleNameOrInitial: string
   private readonly _lastName: string
 
+  /**
+   * Constructs a PatientName object.
+   * @param lastName Patient's last name
+   * @param firstName Patient's first name
+   * @param middleNameOrInitial Patient's middle name or initial
+   */
   constructor (
     lastName: string,
     firstName: string,

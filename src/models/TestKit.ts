@@ -1,3 +1,9 @@
+/**
+ * The TestKit class represents the TestKit a {@link Patient} uses to collect
+ * a specimen and run a {@link Test}.  There will be an instance of this class
+ * created for every {@link TestResult} reported to the RADx MARS-compliant
+ * hub.
+ */
 export default class TestKit {
   private readonly _id: string
   private readonly _collectedDate: Date
