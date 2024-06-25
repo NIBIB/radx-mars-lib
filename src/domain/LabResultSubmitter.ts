@@ -34,14 +34,14 @@ export default class LabResultSubmitter {
     this.labTestInfo = labTestInfo
   }
 
-  async submitResult (pii: Patient, testKit: TestKit, result: TestResult): Promise<boolean> {
+  async submitResult (pii: Patient, testKit: TestKit, result: TestResult[]): Promise<boolean> {
     const hl7Builder = new HL7MessageBuilder(
       this.provider,
       this.labInfo,
       this.labTestInfo,
-      testKit, // new TestKit('', new Date(), new Date()),
+      testKit,
       pii,
-      [result])
+      result)
 
     const hl7Message = hl7Builder.buildMessage()
 

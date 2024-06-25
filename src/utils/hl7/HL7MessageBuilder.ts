@@ -22,7 +22,8 @@ import type PatientContact from '../../models/PatientContact'
  * @param {TestInfo} testInfo - information about the test
  * @param {TestKit} testKit - information about the test kit
  * @param {Patient} patient - information about the patient
- * @param {TestResult} testResult - information about the test result
+ * @param {TestResult[]} testResult - information about the test result.  For
+ * multiplex tests you must provide the COVID test result first.
  */
 
 export default class HL7MessageBuilder {
@@ -234,7 +235,7 @@ export default class HL7MessageBuilder {
       '', // `19`,
       '', // `20`,
       this._test.performingOrganization.type,
-      this._patient.address,
+      this._patient.address.asHl7String(),
       phoneContact.asHl7String('^'),
       ''// `24`,
     ].join('|')
@@ -278,41 +279,52 @@ export default class HL7MessageBuilder {
   private buildObxSegments (): string[] {
     const resultSegments: string[] = []
     // For result in results.
-    const obxSegment = [
-      'OBX',
-      '1',
-      'CWE',
-      this._testResults[0].asHl7String(),
-      '',
-      this._testResults[0].testResultCode.asHl7String('^'),
-      '',
-      '',
-      this._testResults[0].testResultAbnormalFlagsCode.asHl7String('^'),
-      '',
-      '', // 10
-      'F',
-      '',
-      '',
-      '', // `14`,
-      this._test.performingOrganization.id,
-      '', // `16`,
-      `${this._testResults[0].deviceIdentifier}^^${CodingSystem.N99ELR_VUNKNOWN.asHl7String('^')}`,
-      '', // `18`,
-      formatDate(this._testResults[0].determinationDate),
-      '', // `20`,
-      '', // `21`,
-      '', // `22`,
-      // eslint-disable-next-line max-len
-      `${this._test.performingOrganization.type}^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^${this._test.performingOrganization.id}`,
-      this._test.performingOrganization.address,
-      '' // 25
-    ].join('|')
 
-    resultSegments.push(obxSegment)
+    for(let i = 0; i < this._testResults.length; i++) {
+      const obxSegment = [
+        'OBX',
+        (i+1).toString(),
+        'CWE',
+        this._testResults[0].asHl7String(),
+        '',
+        this._testResults[0].testResultCode.asHl7String('^'),
+        '',
+        '',
+        this._testResults[0].testResultAbnormalFlagsCode.asHl7String('^'),
+        '',
+        '', // 10
+        'F',
+        '',
+        '',
+        '', // `14`,
+        this._test.performingOrganization.id,
+        '', // `16`,
+        `${this._testResults[0].deviceIdentifier}^^${CodingSystem.N99ELR_VUNKNOWN.asHl7String('^')}`,
+        '', // `18`,
+        formatDate(this._testResults[0].determinationDate),
+        '', // `20`,
+        '', // `21`,
+        '', // `22`,
+        // eslint-disable-next-line max-len
+        `${this._test.performingOrganization.type}^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^${this._test.performingOrganization.id}`,
+        this._test.performingOrganization.address,
+        '' // 25
+      ].join('|')
 
+      resultSegments.push(obxSegment)
+
+      const nteSegment = [
+        'NTE',
+        (i+1).toString(),
+        'L',
+        this._testResults[0].deviceIdentifier,
+      ].join('|')
+
+      resultSegments.push(nteSegment);
+    }
     const obxAgeSegment = [
       'OBX',
-      `${resultSegments.length + 1}`,
+      `${this._testResults.length + 1}`,
       'NM',
       `35659-2^Age at specimen collection^${CodingSystem.LOINC_271.asHl7String()}`,
       '',
@@ -366,7 +378,7 @@ export default class HL7MessageBuilder {
     }
     const obxSymptomaticSegment = [
       'OBX',
-      `${resultSegments.length + 1}`,
+      `${this._testResults.length + 1}`,
       'CWE',
       // eslint-disable-next-line max-len
       `95419-8^Whether the patient has symptoms related to condition of interest^${CodingSystem.LOINC_271.asHl7String()}`,
@@ -409,7 +421,7 @@ export default class HL7MessageBuilder {
     const obxSystemOnsetDateStr: string = formatShortDate(symptomOnsetDate)
     const obxSymptomOnsetSegment = [
       'OBX',
-      `${resultSegments.length + 1}`,
+      `${this._testResults.length + 1}`,
       'DT',
       `65222-2^Date and time of symptom onset^${CodingSystem.LOINC_271.asHl7String()}`,
       '',

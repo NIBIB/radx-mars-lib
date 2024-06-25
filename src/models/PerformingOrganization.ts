@@ -58,5 +58,5 @@ export default class PerformingOrganization {
   static readonly OtcProctor = new PerformingOrganization(
     '00Z0000016',
     'SA.Proctor',
-    '13 Fake AtHome Test Street^^ Fake City')
+    '13 Fake AtHome Test Street^^Fake City')
 }
