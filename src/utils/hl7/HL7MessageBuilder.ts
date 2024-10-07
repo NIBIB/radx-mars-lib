@@ -1,5 +1,5 @@
 import type MarsHubProvider from '../../interfaces/MarsHubProvider'
-import type LabInfo from '../../models/MarsLabInfo'
+import type MarsLabInfo from '../../models/MarsLabInfo'
 import type Test from '../../models/Test'
 import type TestKit from '../../models/TestKit'
 import type TestResult from '../../models/TestResult'
@@ -18,17 +18,17 @@ import type PatientContact from '../../models/PatientContact'
  *
  * @param {MarsHubProvider} marsHubProvider - The provider for which the
  * message is being constructed
- * @param {LabInfo} labInfo - information about the submitting lab
- * @param {TestInfo} testInfo - information about the test
+ * @param {MarsLabInfo} marsLabInfo - information about the submitting lab
+ * @param {Test} test - information about the test
  * @param {TestKit} testKit - information about the test kit
  * @param {Patient} patient - information about the patient
- * @param {TestResult[]} testResult - information about the test result.  For
+ * @param {TestResult[]} s - information about the test result.  For
  * multiplex tests you must provide the COVID test result first.
  */
 
 export default class HL7MessageBuilder {
   _hubProvider: MarsHubProvider
-  _labInfo: LabInfo
+  _marsLabInfo: MarsLabInfo
   _test: Test
   _testKit: TestKit
   _patient: Patient
@@ -36,24 +36,24 @@ export default class HL7MessageBuilder {
 
   constructor (
     hubProvider: MarsHubProvider,
-    labInfo: LabInfo,
+    marsLabInfo: MarsLabInfo,
     test: Test,
     testKit: TestKit,
-    labTestSubjects: Patient,
-    labTestResults: TestResult[]
+    patient: Patient,
+    testResults: TestResult[]
   ) {
     this._hubProvider = hubProvider
-    this._labInfo = labInfo
+    this._marsLabInfo = marsLabInfo
     this._test = test
-    this._patient = labTestSubjects
-    this._testResults = labTestResults
+    this._patient = patient
+    this._testResults = testResults
     this._testKit = testKit
   }
 
   buildMessage (): string {
     const mshSegment = this.buildMshSegment()
 
-    const pidSegment = this.buildPidSegment()
+    const pidSegment = this._patient.asHl7String(this._marsLabInfo.sendingSystemIdentifier, '|')
     const spmSegment = this.buildSpmSegment()
     const orcSegment = this.buildOrcSegmentOtc()
     const obxSegments = this.buildObxSegments()
@@ -73,13 +73,11 @@ export default class HL7MessageBuilder {
 
   private buildMshSegment (): string {
     const dateAndTimeOfMessageString = formatDate(new Date())
-    // TODO: Test we cannot have an app name >= 20 characters
-    // TODO: Test we have the required configuration values at start.
     const mshSegment = [
       'MSH',
       '^~\\&',
-      this._labInfo.sendingSystemIdentifier.asHl7String(),
-      this._labInfo.sendingFacilityIdentifier.asHl7String(),
+      this._marsLabInfo.sendingSystemIdentifier.asHl7String(),
+      this._marsLabInfo.sendingFacilityIdentifier.asHl7String(),
       this._hubProvider.receivingApplicationIdentifier.asHl7String(),
       this._hubProvider.receivingFacilityIdentifier.asHl7String(),
       formatDate(new Date()), // .toISOString(),
@@ -153,7 +151,7 @@ export default class HL7MessageBuilder {
       '1',
       '',
       // Unique patient id less than 100 chars.
-      `${this._patient.id}^^^&${this._labInfo.sendingSystemIdentifier.universalId}&ISO^PI`,
+      `${this._patient.id}^^^&${this._marsLabInfo.sendingSystemIdentifier.universalId}&ISO^PI`,
       '',
       Pid5PatientName ?? '~^^^^^^S', // PID5_1 is ~^^^^^^S if blank.
       '', // PID6
@@ -183,7 +181,7 @@ export default class HL7MessageBuilder {
     const spmSegment = [
       'SPM',
       '1',
-      `^${this._testKit.id}&&${this._labInfo.sendingSystemIdentifier.universalId}&ISO`,
+      `^${this._testKit.id}&&${this._marsLabInfo.sendingSystemIdentifier.universalId}&ISO`,
       '',
       this._test.specimenCollectionType.asHl7String(),
       '', // 5
@@ -216,7 +214,7 @@ export default class HL7MessageBuilder {
       'ORC',
       'RE',
       '',
-      `${this._testKit.id}^^${this._labInfo.sendingSystemIdentifier.universalId}^ISO`,
+      `${this._testKit.id}^^${this._marsLabInfo.sendingSystemIdentifier.universalId}^ISO`,
       '',
       '', // 5
       '',
@@ -248,7 +246,7 @@ export default class HL7MessageBuilder {
       'OBR',
       '1',
       '',
-      `${this._testKit.id}^^${this._labInfo.sendingSystemIdentifier.universalId}^ISO`,
+      `${this._testKit.id}^^${this._marsLabInfo.sendingSystemIdentifier.universalId}^ISO`,
       this._test.asHl7String(),
       '', // 5
       '',
@@ -280,10 +278,10 @@ export default class HL7MessageBuilder {
     const resultSegments: string[] = []
     // For result in results.
 
-    for(let i = 0; i < this._testResults.length; i++) {
+    for (let i = 0; i < this._testResults.length; i++) {
       const obxSegment = [
         'OBX',
-        (i+1).toString(),
+        (i + 1).toString(),
         'CWE',
         this._testResults[0].asHl7String(),
         '',
@@ -315,12 +313,12 @@ export default class HL7MessageBuilder {
 
       const nteSegment = [
         'NTE',
-        (i+1).toString(),
+        (i + 1).toString(),
         'L',
-        this._testResults[0].deviceIdentifier,
+        this._testResults[0].deviceIdentifier
       ].join('|')
 
-      resultSegments.push(nteSegment);
+      resultSegments.push(nteSegment)
     }
     const obxAgeSegment = [
       'OBX',

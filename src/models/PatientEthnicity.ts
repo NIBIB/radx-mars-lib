@@ -10,7 +10,7 @@ import CodedValue from './CodedValue'
  * https://www.nibib.nih.gov/covid-19/radx-tech-program/mars/HL7v2-implementation-guide.
  */
 export default class PatientEthnicity extends CodedValue {
-  constructor (
+  private constructor (
     code: string,
     description: string,
     codeSystem: CodingSystem = CodingSystem.HL720189_210
@@ -20,19 +20,16 @@ export default class PatientEthnicity extends CodedValue {
 
   static readonly HispanicOrLatino: PatientEthnicity = new PatientEthnicity(
     'H',
-    'Hispanic or Latino',
-    CodingSystem.HL720189_210
+    'Hispanic or Latino'
   )
 
   static readonly NotHispanicOrLatino: PatientEthnicity = new PatientEthnicity(
     'N',
-    'Not Hispanic or Latino',
-    CodingSystem.HL720189_210
+    'Not Hispanic or Latino'
   )
 
   static readonly Unknown: PatientEthnicity = new PatientEthnicity(
     'U',
-    'Unknown',
-    CodingSystem.HL720189_210
+    'Unknown'
   )
 }

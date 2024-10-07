@@ -4,6 +4,10 @@ import type PatientName from './PatientName'
 import type PatientRace from './PatientRace'
 import type PatientSex from './PatientSex'
 import type PatientContact from './PatientContact'
+import PatientPhoneContact from './PatientPhoneContact'
+import { type NullableString } from './NullableString'
+import { formatShortDate } from '../utils/DateUtils'
+import type HierarchicDesignator from './HierarchicDesignator'
 
 /**
  * Represents the subject of a test.  Corresponds to the PID segment in the HL7
@@ -17,49 +21,134 @@ import type PatientContact from './PatientContact'
  */
 
 export default class Patient {
-  // TODO: Test for birthdate of the patient
-  // TODO: Test to ensure format of birthdate
-  // TODO: Test to ensure format of address.
-  // TODO: Test to ensure patient gender.
-  // TODO: Test to make sure all values are required.
   private readonly _patientContacts: PatientContact[]
+  private readonly _id: string
+  private readonly _age: number
+  private readonly _address: ExtendedAddress
+  private readonly _birthDate: Date | null
+  private readonly _name: PatientName | null
+  private readonly _sex: PatientSex | null
+  private readonly _race: PatientRace | null
+  private readonly _ethnicity: PatientEthnicity | null
+
+  public get patientContacts (): PatientContact[] { return this._patientContacts }
+  public get id (): string { return this._id }
+  public get age (): number { return this._age }
+  public get address (): ExtendedAddress { return this._address }
+  public get birthDate (): Date | null { return this._birthDate }
+  public get name (): PatientName | null { return this._name }
+  public get sex (): PatientSex | null { return this._sex }
+  public get race (): PatientRace | null { return this._race }
+  public get ethnicity (): PatientEthnicity | null { return this._ethnicity }
 
   constructor (
-    public id: string,
-    public age: number,
-    public address: ExtendedAddress,
-    public birthDate: Date | null,
-    public name: PatientName | null,
-    public sex: PatientSex | null,
-    public race: PatientRace | null,
-    public ethnicity: PatientEthnicity | null,
+    id: string,
+    age: number | null,
+    address: ExtendedAddress,
+    birthDate: Date | null,
+    name: PatientName | null,
+    sex: PatientSex | null,
+    race: PatientRace | null,
+    ethnicity: PatientEthnicity | null,
     patientContacts: PatientContact[] | null
   ) {
-    // TODO: If age is empty, set it based on the DOB.
-    this._patientContacts = patientContacts ?? []
-  }
+    if (!id) {
+      throw new Error('You must supply a non-empty ID')
+    }
 
-  public get patientContacts (): PatientContact[] {
-    return this._patientContacts
+    if (id.length > 100) {
+      throw new Error('You cannot have an ID of length greater than 100')
+    }
+
+    if (age == null && !birthDate) {
+      throw new Error('You must supply the patient age or the patient birthdate')
+    }
+
+    this._id = id
+    this._address = address
+    this._birthDate = birthDate
+    this._name = name
+    this._sex = sex
+    this._race = race
+    this._ethnicity = ethnicity
+
+    if (age != null && age > 0) {
+      this._age = age
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const timeDiff = Math.abs(Date.now() - birthDate!.getTime())
+      this._age = Math.floor((timeDiff / (1000 * 3600 * 24)) / 365.25)
+    }
+
+    this._patientContacts = patientContacts ?? []
   }
 
   public addContact (contactToAdd: PatientContact): void {
     this._patientContacts.push(contactToAdd)
   }
-}
 
-// TODO: Validations and tests:
-// TODO: Test: Ensure PID3_1 < 100;
-// TODO: Test: Ensure PID3_1 has a value;
-// TODO: Test: Ensure PID3_4_2 has a value; 3_4_3 is hard-coded.
-// eslint-disable-next-line max-len
-// TODO: Test: Ensure PID5_1 is replaced with appropriate test string if blank.
-// TODO: Ensure DOB PID7 is in approopraite format OR restrict to date.
-// eslint-disable-next-line max-len
-// TODO: Test: Ensure PID8 only accepts valid SEX codes from https://terminology.hl7.org/5.1.0/CodeSystem-v2-0001.html
-// eslint-disable-next-line max-len
-// TODO: Test: Ensure PID10_1 only accepts valid RACE codes from https://terminology.hl7.org/ValueSet-v2-0005.html
-// eslint-disable-next-line max-len
-// TODO: Test: Ensure PID10_2 returns appropriate race description from https://terminology.hl7.org/ValueSet-v2-0005.html based on 10_1 if valued.
-// eslint-disable-next-line max-len
-// TODO: Test: Ensure PID10_3 and 10_7 are populated ONLY if 10_1 is populated.
+  public asHl7String (sendingSystem: HierarchicDesignator, separator: string = '|'): string {
+    if (!sendingSystem.universalId) {
+      throw new Error('There is no universal ID for sending system identifier for patient')
+    }
+
+    const Pid3: string = `${this._id}^^^&${sendingSystem.universalId}&ISO^PI`
+
+    let Pid5PatientName: NullableString = null
+    if (this._name == null ||
+        this._name.lastName.trim().length === 0
+    ) {
+      Pid5PatientName = '~^^^^^^S'
+    } else {
+      Pid5PatientName = this._name.asHl7String()
+    }
+
+    let Pid7PatientDob: string
+    if (this._birthDate != null) {
+      Pid7PatientDob = formatShortDate(this._birthDate)
+    } else {
+      Pid7PatientDob = ''
+    }
+
+    const Pid8PatientSex: string = this._sex?.code ?? ''
+    // Build PID10
+    const Pid10PatientRace: string = this._race?.asHl7String() ?? ''
+
+    let Pid13PatientContacts = ''
+    if (this._patientContacts.length > 0) {
+      Pid13PatientContacts = this._patientContacts.map(p => p.asHl7String('^')).join('~')
+    } else {
+      Pid13PatientContacts = PatientPhoneContact.NoPhoneContact.asHl7String('^')
+    }
+
+    const Pid22PatientEthnicity: string = this._ethnicity?.asHl7String() ?? ''
+    const pidSegment = [
+      'PID',
+      '1',
+      '',
+      // Unique patient id less than 100 chars.
+      Pid3,
+      '',
+      Pid5PatientName ?? '~^^^^^^S', // PID5_1 is ~^^^^^^S if blank.
+      '', // PID6
+      Pid7PatientDob, // Patient DOB in YYYYMMDD format.  Optional
+      Pid8PatientSex, // Optional
+      '',
+      Pid10PatientRace,
+      this._address?.asHl7String(),
+      '',
+      Pid13PatientContacts,
+      '', // `14`,
+      '', // `15`,
+      '', // `16`,
+      '', // `17`,
+      '', // `18`,
+      '', // `19`,
+      '', // `20`,
+      '', // `21`,
+      Pid22PatientEthnicity
+    ].join(separator)
+
+    return pidSegment
+  }
+}

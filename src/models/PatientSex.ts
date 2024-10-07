@@ -8,45 +8,46 @@ import CodedValue from './CodedValue'
  * This class defines no constructor.
  */
 export default class PatientSex extends CodedValue {
+  private constructor (
+    code: string,
+    description: string,
+    codingSystem: CodingSystem = new CodingSystem('Hl7VSAdministrativeSex', 'V20001')
+  ) {
+    super(code, description, codingSystem)
+  }
+
   static readonly Female: PatientSex = new PatientSex(
     'F',
-    'Female',
-    new CodingSystem('Hl7VSAdministrativeSex', 'V20001')
+    'Female'
   )
 
   static readonly Male: PatientSex = new PatientSex(
     'M',
-    'Male',
-    new CodingSystem('Hl7VSAdministrativeSex', 'V20001')
+    'Male'
   )
 
   static readonly Other: PatientSex = new PatientSex(
     'O',
-    'Other',
-    new CodingSystem('Hl7VSAdministrativeSex', 'V20001')
+    'Other'
   )
 
   static readonly Unknown: PatientSex = new PatientSex(
     'U',
-    'Unknown',
-    new CodingSystem('Hl7VSAdministrativeSex', 'V20001')
+    'Unknown'
   )
 
   static readonly Ambiguous: PatientSex = new PatientSex(
     'A',
-    'Ambiguous',
-    new CodingSystem('Hl7VSAdministrativeSex', 'V20001')
+    'Ambiguous'
   )
 
   static readonly NotApplicable: PatientSex = new PatientSex(
     'N',
-    'Not applicable',
-    new CodingSystem('Hl7VSAdministrativeSex', 'V20001')
+    'Not applicable'
   )
 
   static readonly NonBinary: PatientSex = new PatientSex(
     'X',
-    'Non-Binary',
-    new CodingSystem('Hl7VSAdministrativeSex', 'V20001')
+    'Non-Binary'
   )
 }

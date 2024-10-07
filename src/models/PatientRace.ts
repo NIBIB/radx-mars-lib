@@ -17,7 +17,7 @@ export default class PatientRace extends CodedValue {
    * parameter.
    * @param codingSystem the system in which the race is to be encoded.
    */
-  constructor (
+  private constructor (
     code: string,
     description: string,
     codingSystem: CodingSystem = CodingSystem.HL720005_300
@@ -28,41 +28,35 @@ export default class PatientRace extends CodedValue {
   static readonly AmericanIndianOrAlaskaNative: PatientRace =
     new PatientRace(
       '1002-5',
-      'American Indian or Alaska Native',
-      CodingSystem.HL720005_300
+      'American Indian or Alaska Native'
     )
 
   static readonly Asian: PatientRace =
     new PatientRace(
       '2028-9',
-      'Asian',
-      CodingSystem.HL720005_300
+      'Asian'
     )
 
   static readonly BlackOrAfricanAmerican: PatientRace =
     new PatientRace(
       '2054-5',
-      'Black or African American',
-      CodingSystem.HL720005_300
+      'Black or African American'
     )
 
   static readonly NativeHawaiianOrOtherPacificIslander: PatientRace =
     new PatientRace(
       '2076-8',
-      'Native Hawaiian or Other Pacific Islander',
-      CodingSystem.HL720005_300
+      'Native Hawaiian or Other Pacific Islander'
     )
 
   static readonly White: PatientRace =
     new PatientRace(
       '2106-3',
-      'White',
-      CodingSystem.HL720005_300
+      'White'
     )
 
   static readonly OtherRace: PatientRace = new PatientRace(
     '2131-1',
-    'Other Race',
-    CodingSystem.HL720005_300
+    'Other Race'
   )
 }

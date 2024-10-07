@@ -1,3 +1,0 @@
-This is a simplified example and in a real-world scenario, you might want to have more comprehensive tests. For instance, you could add tests for different edge cases, or test the date formatting in the MSH segment, or test that the HL7 message builder throws an error if mandatory data is missing.
-
-Remember to install Jest and save it as a development dependency with `npm install --save-dev jest` if it's not already part of your project. Then you can run the test with the jest command, or by adding a test script `("test": "jest")` to your package.json file and running npm test.

@@ -1,7 +1,7 @@
 {
   "name": "radx-mars-lib",
-  "version": "1.0.0",
-  "description": "MARS Library for submitting lab results to a hub.",
+  "version": "1.0.1",
+  "description": "Base RADx MARS library for submitting lab results to a hub.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -10,9 +10,20 @@
     "prepublishOnly": "npm run build",
     "lint": "eslint . --ext .ts"
   },
-  "keywords": [],
-  "author": "Andy Meadows, Meadows Design, LLC",
-  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NIBIB/radx-mars-lib"
+  },
+  "bugs": {
+    "url": "https://github.com/NIBIB/radx-mars-lib/issues"
+  },
+  "keywords": ["RADx", "MARS Hub"],
+  "author": {
+    "name": "Andy Meadows",
+    "organization": "Meadows Design, LLC",
+    "url": "https://meadowsdesign.com"
+  },
+  "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.5.2",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
@@ -25,5 +36,10 @@
     "ts-jest": "^29.1.0",
     "ts-node": "^10.4.0",
     "typescript": "^5.2.2"
-  }
+  },
+  "files": [
+    "dist",
+    "CONTRIBUTE.md",
+    "README.md"
+  ]
 }

@@ -18,8 +18,6 @@ export default class MarsClient {
   private readonly provider: MarsHubProvider
   private readonly labInfo: LabInfo
 
-  // TODO: Test to ensure the hub provider and lab info are provided.
-  // TODO: Test to ensure the values are actually those types.
   constructor (provider: MarsHubProvider, labInfo: LabInfo) {
     this.provider = provider
     this.labInfo = labInfo

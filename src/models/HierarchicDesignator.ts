@@ -19,9 +19,20 @@ export default abstract class HierarchicDesignator {
   private readonly _universalId: string
   private readonly _universalIdType: string
 
-  // TODO: Test to ensure the hub provider and lab info are provided.
-  // TODO: Test to ensure the values are actually those types.
   constructor (namespace: string, universalId: string, universalIdType: string) {
+    // Check for null/empty strings if strictNullChecks is not enabled.
+    if (!namespace || !universalId || !universalIdType) {
+      throw new Error('All parameters to the Hierarchic Designator must be non-empty strings')
+    }
+
+    if (!this.validateUniversalIdType(universalIdType)) {
+      throw new Error(`Unexpected id type: ${universalIdType}`)
+    }
+
+    if (!this.validateUniversalId(universalId, universalIdType)) {
+      throw new Error(`The universal ID ${universalId} is not a valid ${universalIdType} ID`)
+    }
+
     this._namespace = namespace
     this._universalId = universalId
     this._universalIdType = universalIdType
@@ -41,5 +52,37 @@ export default abstract class HierarchicDesignator {
 
   public asHl7String (separator: string = '^'): string {
     return [this._namespace, this._universalId, this._universalIdType].join(separator)
+  }
+
+  private validateUniversalIdType (universalIdType: string): boolean {
+    // Check if namespace is in the list of valid namespaces
+    const validIdTypes = ['ISO', 'HL7', 'OID', 'UUID', 'DNS', 'CLIA']
+    return validIdTypes.includes(universalIdType.toUpperCase())
+  }
+
+  private validateUniversalId (universalId: string, universalIdType: string): boolean {
+    // Namespace-specific validation logic
+
+    switch (universalIdType.toUpperCase()) {
+      case 'OID':
+        // Validate OID format - dot-separated numerical values
+        return /^(\d+)(\.(\d+))*$/.test(universalId)
+      case 'UUID':
+        // Validate UUID format
+        return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(universalId)
+      case 'DNS':
+        // Validate DNS format - basic DNS validation
+        return /^[a-zA-Z0-9.-]+$/.test(universalId)
+      case 'ISO':
+        return /^(\d+)(\.(\d+))*$/.test(universalId)
+      case 'CLIA':
+        return /^\d{2}[A-Za-z]\d{7}$/.test(universalId)
+      case 'HL7':
+        // Placeholder - implement rules for other namespaces if applicable
+        return true // Assume valid for simplicity
+      default:
+        // Unsupported namespace
+        return false
+    }
   }
 }

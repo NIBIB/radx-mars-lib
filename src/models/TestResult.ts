@@ -21,7 +21,6 @@ export default class TestResult extends CodedValue {
   _testResultCode: TestResultCode
   _testResultAbnormalFlagsCode: TestResultAbnormalFlagsCode
 
-  // TODO: Create a test and bound result status to only allowed values.
   /**
    * Constructs an {@link TestResult} object used by the
    * {@link LabResultSubmitter} to submit a test result to a RADx MARS compliant

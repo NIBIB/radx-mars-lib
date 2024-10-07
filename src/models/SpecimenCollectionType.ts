@@ -78,185 +78,161 @@ export default class SpecimenCollectionType {
   static readonly AnteriorNaresSwab = new SpecimenCollectionType(
     '697989009',
     'Anterior nares swab',
-    'Anterior nares swab (specimen)',
-    CodingSystem.SCT_20210301
+    'Anterior nares swab (specimen)'
   )
 
   static readonly BloodSpecimen = new SpecimenCollectionType(
     '119297000',
-    'Blood specimen', 'Blood specimen (specimen)',
-    CodingSystem.SCT_20210301
+    'Blood specimen', 'Blood specimen (specimen)'
   )
 
   static readonly BronchoalveolarLavageFluidSample = new SpecimenCollectionType(
     '258607008',
     'Bronchoalveolar lavage fluid sample',
-    'Bronchoalveolar lavage fluid sample (specimen)', CodingSystem.SCT_20210301)
+    'Bronchoalveolar lavage fluid sample (specimen)'
+  )
 
   static readonly CapillaryBloodSpecimen = new SpecimenCollectionType(
     '122554006',
     'Capillary blood specimen',
-    'Capillary blood specimen (specimen)',
-    CodingSystem.SCT_20210301
+    'Capillary blood specimen (specimen)'
   )
 
   static readonly DriedBloodSpecimen = new SpecimenCollectionType(
     '119294007',
     'Dried blood specimen',
-    'Dried blood specimen (specimen)',
-    CodingSystem.SCT_20210301
+    'Dried blood specimen (specimen)'
   )
 
   static readonly GastricAspirateSample = new SpecimenCollectionType(
     '168137004',
     'Gastric aspirate sample',
-    'Gastric aspirate sample (specimen)',
-    CodingSystem.SCT_20210301
+    'Gastric aspirate sample (specimen)'
   )
 
   static readonly LowerRespiratorySample = new SpecimenCollectionType(
     '258606004',
     'Lower respiratory sample',
-    'Lower respiratory sample (specimen)',
-    CodingSystem.SCT_20210301
+    'Lower respiratory sample (specimen)'
   )
 
   static readonly NasopharyngealAspirate = new SpecimenCollectionType(
     '258411007',
     'Nasopharyngeal aspirate',
-    'Nasopharyngeal aspirate (specimen)',
-    CodingSystem.SCT_20210301
+    'Nasopharyngeal aspirate (specimen)'
   )
 
   static readonly NasopharyngealSwab = new SpecimenCollectionType(
     '258500001',
     'Nasopharyngeal swab',
-    'Nasopharyngeal swab (specimen)',
-    CodingSystem.SCT_20210301
+    'Nasopharyngeal swab (specimen)'
   )
 
   static readonly OropharyngealAspirate = new SpecimenCollectionType(
     '258412000',
     'Oropharyngeal aspirate',
-    'Oropharyngeal aspirate (specimen)',
-    CodingSystem.SCT_20210301
+    'Oropharyngeal aspirate (specimen)'
   )
 
   static readonly PleuralFluidSpecimen = new SpecimenCollectionType(
     '418564007',
     'Pleural fluid specimen',
-    'Pleural fluid specimen (specimen)',
-    CodingSystem.SCT_20210301
+    'Pleural fluid specimen (specimen)'
   )
 
   static readonly SalivaSpecimen = new SpecimenCollectionType(
     '119342007',
     'Saliva specimen',
-    'Saliva specimen (specimen)',
-    CodingSystem.SCT_20210301
+    'Saliva specimen (specimen)'
   )
 
   static readonly SerumSpecimen = new SpecimenCollectionType(
     '119364003',
     'Serum specimen',
-    'Serum specimen (specimen)',
-    CodingSystem.SCT_20210301
+    'Serum specimen (specimen)'
   )
 
   static readonly SpecimenFromDuodenumObtainedByAspiration = new SpecimenCollectionType(
     '734427005',
     'Specimen from duodenum obtained by aspiration',
-    'Specimen from duodenum obtained by aspiration (specimen)',
-    CodingSystem.SCT_20210301
+    'Specimen from duodenum obtained by aspiration (specimen)'
   )
 
   static readonly SpecimenFromLungObtainedByBiopsy = new SpecimenCollectionType(
     '122610009',
     'Specimen from lung obtained by biopsy',
-    'Specimen from lung obtained by biopsy (specimen)',
-    CodingSystem.SCT_20210301
+    'Specimen from lung obtained by biopsy (specimen)'
   )
 
   static readonly SpecimenFromTracheaObtainedByAspiration = new SpecimenCollectionType(
     '445447003',
     'Specimen from trachea obtained by aspiration',
-    'Specimen from trachea obtained by aspiration (specimen)',
-    CodingSystem.SCT_20210301
+    'Specimen from trachea obtained by aspiration (specimen)'
   )
 
   static readonly SputumSpecimen = new SpecimenCollectionType(
     '119334006',
     'Sputum specimen',
-    'Sputum specimen (specimen)',
-    CodingSystem.SCT_20210301
+    'Sputum specimen (specimen)'
   )
 
   static readonly StoolSpecimen = new SpecimenCollectionType(
     '119339001',
     'Stool specimen',
-    'Stool specimen (specimen)',
-    CodingSystem.SCT_20210301
+    'Stool specimen (specimen)'
   )
 
   static readonly SwabFromNasalSinus = new SpecimenCollectionType(
     '472901003',
     'Swab from nasal sinus',
-    'Swab from nasal sinus (specimen)',
-    CodingSystem.SCT_20210301
+    'Swab from nasal sinus (specimen)'
   )
 
   static readonly SwabOfInternalNose = new SpecimenCollectionType(
     '445297001',
     'Swab of internal nose',
-    'Swab of internal nose (specimen)',
-    CodingSystem.SCT_20210301
+    'Swab of internal nose (specimen)'
   )
 
   static readonly MidTurbinateNasalSwab = new SpecimenCollectionType(
     '871810001',
     'Mid-turbinate nasal swab',
-    'Swab specimen from nasal mid-turbinate (specimen)',
-    CodingSystem.SCT_20210301
+    'Swab specimen from nasal mid-turbinate (specimen)'
   )
 
   static readonly OropharyngealSwab = new SpecimenCollectionType(
     '461911000124106',
     'Oropharyngeal swab',
-    'Swab specimen from oropharynx (specimen)',
-    CodingSystem.SCT_20210301
+    'Swab specimen from oropharynx (specimen)'
   )
 
   static readonly ThroatSwab = new SpecimenCollectionType(
     '258529004',
-    'Throat swab', 'Throat swab (specimen)',
-    CodingSystem.SCT_20210301
+    'Throat swab',
+    'Throat swab (specimen)'
   )
 
   static readonly UpperRespiratoryFluidSpecimenObtainedByTrachealAspiration = new SpecimenCollectionType(
     '122877000',
     'Upper respiratory fluid specimen obtained by tracheal aspiration',
-    'Upper respiratory fluid specimen obtained by tracheal aspiration (specimen)',
-    CodingSystem.SCT_20210301
+    'Upper respiratory fluid specimen obtained by tracheal aspiration (specimen)'
   )
 
   static readonly UpperRespiratorySwabSample = new SpecimenCollectionType(
     '309164002',
     'Upper respiratory swab sample',
-    'Upper respiratory swab sample (specimen)',
-    CodingSystem.SCT_20210301
+    'Upper respiratory swab sample (specimen)'
   )
 
   static readonly UrineSpecimen = new SpecimenCollectionType(
     '122575003',
     'Urine specimen',
-    'Urine specimen (specimen)',
-    CodingSystem.SCT_20210301
+    'Urine specimen (specimen)'
   )
 
   static readonly WholeBloodSample = new SpecimenCollectionType(
     '258580003',
     'Whole blood sample',
-    'Whole blood sample (specimen)',
-    CodingSystem.SCT_20210301
+    'Whole blood sample (specimen)'
   )
 }
