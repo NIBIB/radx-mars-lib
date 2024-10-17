@@ -22,6 +22,7 @@ import PatientRace from './models/PatientRace'
 import PatientSex from './models/PatientSex'
 import TestResultAbnormalFlagsCode from './models/TestResultAbnormalFlagsCode'
 import TestResultCode from './models/TestResultCode'
+import type TestSubmissionResult from './interfaces/TestSubmissionResult'
 
 export {
   CliaHierarchicDesignator,
@@ -45,6 +46,7 @@ export {
   TestResult,
   TestResultAbnormalFlagsCode,
   TestResultCode,
+  type TestSubmissionResult,
   type LabInfo,
   type MarsHubProvider,
   type NullableString
