@@ -4,13 +4,14 @@
  */
 
 import type HierarchicDesignator from '../models/HierarchicDesignator'
+import type TestSubmissionResult from './TestSubmissionResult'
 
 export default interface MarsHubProvider {
   get receivingApplicationIdentifier(): HierarchicDesignator
   get receivingFacilityIdentifier(): HierarchicDesignator
   get isUsingProduction(): boolean
 
-  submitTest: (hl7Message: any) => Promise<boolean>
+  submitTest: (hl7Message: any) => Promise<TestSubmissionResult>
   // Not all providers will support batch, so we need to extract this
   // information and see if it can be done as part of the ReportStream work, as
   // they do support batching.  Provider needs to raise this value.

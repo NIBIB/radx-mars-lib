@@ -5,6 +5,7 @@ import type TestResult from '../models/TestResult'
 import HL7MessageBuilder from '../utils/hl7/HL7MessageBuilder'
 import type TestKit from '../models/TestKit'
 import type Patient from '../models/Patient'
+import type TestSubmissionResult from '../interfaces/TestSubmissionResult'
 
 /**
  * The LabResultSubmitter class handles the construction of an HL7 message and
@@ -34,7 +35,7 @@ export default class LabResultSubmitter {
     this.labTestInfo = labTestInfo
   }
 
-  async submitResult (pii: Patient, testKit: TestKit, result: TestResult[]): Promise<boolean> {
+  async submitResult (pii: Patient, testKit: TestKit, result: TestResult[]): Promise<TestSubmissionResult> {
     const hl7Builder = new HL7MessageBuilder(
       this.provider,
       this.labInfo,
