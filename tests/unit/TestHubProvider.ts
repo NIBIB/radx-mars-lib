@@ -7,6 +7,10 @@ class TestHubSubmissionResult implements TestSubmissionResult {
   get successful(): boolean {
     return true
   }
+  get retryable(): boolean 
+  {
+    return false
+  }
   get id(): (string|null) {
     return 'id'
   }
