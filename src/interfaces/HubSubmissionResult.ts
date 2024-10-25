@@ -1,8 +1,10 @@
 enum HubSubmissionResultStatus {
+  error,
   notFound,
   received,
   processing,
-  processed
+  processed,
+  unavailable
 }
 
 interface HubSubmissionResult {

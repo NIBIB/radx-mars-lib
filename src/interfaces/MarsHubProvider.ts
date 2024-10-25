@@ -12,6 +12,10 @@ export default interface MarsHubProvider {
   get receivingFacilityIdentifier(): HierarchicDesignator
   get isUsingProduction(): boolean
 
+  // TODO: This
+  // Separate interfaces
+  // submitTestResult
+  // retireveTestSubmissionResult
   submitTest: (hl7Message: any) => Promise<TestSubmissionResult>
   retrieveSubmissionResult: (submissionId: string) => Promise<HubSubmissionResult>
   // Not all providers will support batch, so we need to extract this

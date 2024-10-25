@@ -1,6 +1,6 @@
 {
   "name": "radx-mars-lib",
-  "version": "2.2.0",
+  "version": "2.2.3",
   "description": "Base RADx MARS library for exchanging lab results with a hub.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
