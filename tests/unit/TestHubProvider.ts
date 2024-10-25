@@ -1,9 +1,13 @@
+import {
+  HubSubmissionResultStatus,
+  HubSubmissionResult
+} from "../../src/interfaces/HubSubmissionResult"
 import MarsHubProvider from "../../src/interfaces/MarsHubProvider"
 import TestSubmissionResult from "../../src/interfaces/TestSubmissionResult"
 import HierarchicDesignator from "../../src/models/HierarchicDesignator"
 import IsoHierarchicDesignator from "../../src/models/IsoHierarchicDesignator"
 
-class TestHubSubmissionResult implements TestSubmissionResult {
+class TestTestSubmissionResult implements TestSubmissionResult {
   get successful(): boolean {
     return true
   }
@@ -22,6 +26,27 @@ class TestHubSubmissionResult implements TestSubmissionResult {
   }
 
 }
+
+
+class TestHubSubmissionResult implements HubSubmissionResult {
+  get status(): HubSubmissionResultStatus {
+    return HubSubmissionResultStatus.notFound
+  }
+
+  get successful(): boolean {
+    return true
+  }
+  get submissionId(): string | null {
+    return 'id'
+  }
+  get warnings(): string[] {
+    return []
+  }
+  get errors(): string[] {
+    return []
+  }
+}
+
 /**
  * Test hub provider as if we're implementing to AIMS.  Using these designators
  * to promote more thorough data and test validation.
@@ -38,6 +63,10 @@ export default class TestHubProvider implements MarsHubProvider {
   readonly isUsingProduction = false
 
   public async submitTest (hl7Message: any): Promise<TestSubmissionResult> {
+    return new TestTestSubmissionResult()
+  }
+
+  public async retrieveSubmissionResult (submissionId: string): Promise<HubSubmissionResult> {
     return new TestHubSubmissionResult()
   }
 }

@@ -1,7 +1,4 @@
 import MarsClient from './MarsClient'
-import LabResultSubmitter from './domain/LabResultSubmitter'
-import type LabInfo from './interfaces/LabInfo'
-import type MarsHubProvider from './interfaces/MarsHubProvider'
 import CliaHierarchicDesignator from './models/CliaHierarchicDesignator'
 import IsoHierarchicDesignator from './models/IsoHierarchicDesignator'
 import MarsLabInfo from './models/MarsLabInfo'
@@ -22,7 +19,15 @@ import PatientRace from './models/PatientRace'
 import PatientSex from './models/PatientSex'
 import TestResultAbnormalFlagsCode from './models/TestResultAbnormalFlagsCode'
 import TestResultCode from './models/TestResultCode'
-import type TestSubmissionResult from './interfaces/TestSubmissionResult'
+import {
+  type HubSubmissionResult,
+  HubSubmissionResultStatus,
+  type HubSubmissionResultRetriever,
+  type LabInfo,
+  type LabResultSubmitter,
+  type MarsHubProvider,
+  type TestSubmissionResult
+} from './interfaces'
 
 export {
   CliaHierarchicDesignator,
@@ -30,8 +35,11 @@ export {
   CodingSystem,
   ExtendedAddress,
   HierarchicDesignator,
+  type HubSubmissionResult,
+  type HubSubmissionResultRetriever,
+  HubSubmissionResultStatus,
   IsoHierarchicDesignator,
-  LabResultSubmitter,
+  type LabResultSubmitter,
   MarsClient,
   MarsLabInfo,
   Patient,

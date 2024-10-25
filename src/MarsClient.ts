@@ -1,4 +1,6 @@
-import LabResultSubmitter from './domain/LabResultSubmitter'
+import HubSubmissionResultRetrieverImpl from './domain/HubSubmissionResultRetrieverImpl'
+import LabResultSubmitterImpl from './domain/LabResultSubmitterImpl'
+import type LabResultSubmitter from './interfaces/LabResultSubmitter'
 import type MarsHubProvider from './interfaces/MarsHubProvider'
 import type LabInfo from './models/MarsLabInfo'
 import type TestInfo from './models/Test'
@@ -35,6 +37,14 @@ export default class MarsClient {
      * MARSClient constructor.
      */
   createResultSubmitter (labTestInfo: TestInfo): LabResultSubmitter {
-    return new LabResultSubmitter(this.provider, this.labInfo, labTestInfo)
+    return new LabResultSubmitterImpl(this.provider, this.labInfo, labTestInfo)
+  }
+
+  /**
+   * Creates a {HubResultRetriever} that will retrieve the result from
+   * the hub.
+   */
+  createHubSubmissionResultRetriever (): HubSubmissionResultRetrieverImpl {
+    return new HubSubmissionResultRetrieverImpl(this.provider)
   }
 }
