@@ -15,7 +15,9 @@ export default class PatientPhoneContact implements PatientContact {
     localNumber: string
   ) {
     this._areaCode = areaCode
-    this._localNumber = localNumber
+    // Will not pass validation if the number contains dashes.  Validation
+    // DOES pass with dots as separators.
+    this._localNumber = localNumber.replaceAll('-', '.')
   }
 
   /** Identfies the {@link PatientContact} as a phone number */

@@ -10,14 +10,8 @@ import { formatShortDate } from '../utils/DateUtils'
 import type HierarchicDesignator from './HierarchicDesignator'
 
 /**
- * Represents the subject of a test.  Corresponds to the PID segment in the HL7
- * message
- *
- * @param {string} id - The unique ID for the patient in your system.
- * @param {PatientName} name - The name of the patient
- * @param {ExtendedAddress} address - The address of the patient
- * @param {Date} birthDate - The birthdate of the patient.
- * @param {string} sex
+ * Represents the subject of a test.  Corresponds predominately to the PID
+ * segment in the HL7 message
  */
 
 export default class Patient {
@@ -41,6 +35,19 @@ export default class Patient {
   public get race (): PatientRace | null { return this._race }
   public get ethnicity (): PatientEthnicity | null { return this._ethnicity }
 
+  /**
+   * @param {string} id - The unique ID for the patient in your system.
+   * @param {PatientName} name - The name as specified by the patient
+   * @param {ExtendedAddress} address - The reported address of the patient
+   * @param {Date|null} birthDate - The patient's reporeted birthdate.
+   * @param {PatientSex|null} sex - The patent's reported sex.
+   * @param {PatientRace|null} race - The patient's reported race
+   * @param {PatientEthnicity|null} ethnicity - If reported, the patient's
+   * ethnicity
+   * @param {PatientContact[]|null} patientContacts - Means by which the
+   * patient may be contacted.  See {@link PatientEmailContact} or
+   * {@link PatientPhoneContact}
+   */
   constructor (
     id: string,
     age: number | null,

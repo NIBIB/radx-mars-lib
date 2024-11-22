@@ -13,6 +13,8 @@ export default class ExtendedAddress {
   private readonly _county: NullableString
 
   /**
+   * Represents an HL7 ExtendedAddress object.  Supports construction and
+   * serialization of said object.
    *
    * @param zip - Required zipcode of the address.
    * @param street - Optional line 1 of the street address.
