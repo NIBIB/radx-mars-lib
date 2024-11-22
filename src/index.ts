@@ -18,10 +18,13 @@ import HierarchicDesignator from './models/HierarchicDesignator'
 import { type NullableString } from './models/NullableString'
 import PatientEmailContact from './models/PatientEmailContact'
 import PatientPhoneContact from './models/PatientPhoneContact'
+import PatientName from './models/PatientName'
 import PatientRace from './models/PatientRace'
 import PatientSex from './models/PatientSex'
 import TestResultAbnormalFlagsCode from './models/TestResultAbnormalFlagsCode'
 import TestResultCode from './models/TestResultCode'
+import type PatientContact from './models/PatientContact'
+import PatientEthnicity from './models/PatientEthnicity'
 
 export {
   CliaHierarchicDesignator,
@@ -30,11 +33,17 @@ export {
   ExtendedAddress,
   HierarchicDesignator,
   IsoHierarchicDesignator,
+  type LabInfo,
   LabResultSubmitter,
   MarsClient,
+  type MarsHubProvider,
   MarsLabInfo,
+  type NullableString,
   Patient,
+  type PatientContact,
   PatientEmailContact,
+  PatientEthnicity,
+  PatientName,
   PatientPhoneContact,
   PatientRace,
   PatientSex,
@@ -44,8 +53,5 @@ export {
   TestKit,
   TestResult,
   TestResultAbnormalFlagsCode,
-  TestResultCode,
-  type LabInfo,
-  type MarsHubProvider,
-  type NullableString
+  TestResultCode
 }
