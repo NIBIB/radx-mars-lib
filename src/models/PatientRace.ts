@@ -20,7 +20,7 @@ export default class PatientRace extends CodedValue {
   private constructor (
     code: string,
     description: string,
-    codingSystem: CodingSystem = CodingSystem.HL720005_300
+    codingSystem: CodingSystem = CodingSystem.HL70005_251
   ) {
     super(code, description, codingSystem)
   }

@@ -1,33 +1,36 @@
-import MarsClient from './MarsClient'
-import CliaHierarchicDesignator from './models/CliaHierarchicDesignator'
-import IsoHierarchicDesignator from './models/IsoHierarchicDesignator'
-import MarsLabInfo from './models/MarsLabInfo'
-import Patient from './models/Patient'
-import Test from './models/Test'
-import TestResult from './models/TestResult'
-import PerformingOrganization from './models/PerformingOrganization'
-import SpecimenCollectionType from './models/SpecimenCollectionType'
-import TestKit from './models/TestKit'
-import CodedValue from './models/CodedValue'
-import CodingSystem from './models/CodingSystem'
-import ExtendedAddress from './models/ExtendedAddress'
-import HierarchicDesignator from './models/HierarchicDesignator'
-import { type NullableString } from './models/NullableString'
-import PatientEmailContact from './models/PatientEmailContact'
-import PatientPhoneContact from './models/PatientPhoneContact'
-import PatientRace from './models/PatientRace'
-import PatientSex from './models/PatientSex'
-import TestResultAbnormalFlagsCode from './models/TestResultAbnormalFlagsCode'
-import TestResultCode from './models/TestResultCode'
 import {
-  type HubSubmissionResult,
   HubSubmissionResultStatus,
+  type HubSubmissionResult,
   type HubSubmissionResultRetriever,
   type LabInfo,
   type LabResultSubmitter,
   type MarsHubProvider,
   type TestSubmissionResult
 } from './interfaces'
+import CliaHierarchicDesignator from './models/CliaHierarchicDesignator'
+import CodedValue from './models/CodedValue'
+import CodingSystem from './models/CodingSystem'
+import ExtendedAddress from './models/ExtendedAddress'
+import HierarchicDesignator from './models/HierarchicDesignator'
+import IsoHierarchicDesignator from './models/IsoHierarchicDesignator'
+import MarsClient from './MarsClient'
+import MarsLabInfo from './models/MarsLabInfo'
+import { type NullableString } from './models/NullableString'
+import Patient from './models/Patient'
+import type PatientContact from './models/PatientContact'
+import PatientEmailContact from './models/PatientEmailContact'
+import PatientEthnicity from './models/PatientEthnicity'
+import PatientName from './models/PatientName'
+import PatientPhoneContact from './models/PatientPhoneContact'
+import PatientRace from './models/PatientRace'
+import PatientSex from './models/PatientSex'
+import PerformingOrganization from './models/PerformingOrganization'
+import SpecimenCollectionType from './models/SpecimenCollectionType'
+import Test from './models/Test'
+import TestKit from './models/TestKit'
+import TestResult from './models/TestResult'
+import TestResultAbnormalFlagsCode from './models/TestResultAbnormalFlagsCode'
+import TestResultCode from './models/TestResultCode'
 
 export {
   CliaHierarchicDesignator,
@@ -35,15 +38,14 @@ export {
   CodingSystem,
   ExtendedAddress,
   HierarchicDesignator,
-  type HubSubmissionResult,
-  type HubSubmissionResultRetriever,
   HubSubmissionResultStatus,
   IsoHierarchicDesignator,
-  type LabResultSubmitter,
   MarsClient,
   MarsLabInfo,
   Patient,
   PatientEmailContact,
+  PatientEthnicity,
+  PatientName,
   PatientPhoneContact,
   PatientRace,
   PatientSex,
@@ -54,8 +56,12 @@ export {
   TestResult,
   TestResultAbnormalFlagsCode,
   TestResultCode,
-  type TestSubmissionResult,
+  type HubSubmissionResult,
+  type HubSubmissionResultRetriever,
   type LabInfo,
+  type LabResultSubmitter,
   type MarsHubProvider,
-  type NullableString
+  type NullableString,
+  type PatientContact,
+  type TestSubmissionResult
 }
