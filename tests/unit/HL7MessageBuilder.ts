@@ -19,6 +19,7 @@ import TestResultAbnormalFlagsCode from '../../src/models/TestResultAbnormalFlag
 import TestResultCode from '../../src/models/TestResultCode';
 import HL7MessageBuilder from '../../src/utils/hl7/HL7MessageBuilder';
 import TestHubProvider from './TestHubProvider'
+import { PatientSymptomatic, PatientSymptomaticDeclaration } from '../../src/models/PatientSymptomatic';
 
 /** 
  * test the buildMessage function of the HL7MessageBuilder 
@@ -27,8 +28,198 @@ import TestHubProvider from './TestHubProvider'
  **/
 describe('Message Structure', () => {
 
-    it('should include symptomatic information', () => {
-        expect(true).toEqual(true);
+    describe('should include symptomatic information of unknown onset', () => {
+        const labInfo = new MarsLabInfo(
+            new IsoHierarchicDesignator(
+                'AbbottInformatics',
+                '2.16.840.1.113883.3.8589.4.1.22'
+            ),
+            new CliaHierarchicDesignator(
+                'AbbottInformatics',
+                '00Z0000002'
+            ));
+        const patientTest = new Test('94558-4',
+            'SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay',
+            PerformingOrganization.OtcProctor,
+            SpecimenCollectionType.AnteriorNaresSwab,
+            CodingSystem.LOINC_271);
+
+        const patientAge: number = 28
+        const patient = new Patient(
+            'YOUR_PATIENT_ID',
+            patientAge,
+            new ExtendedAddress('00000', '1 Main Street', 'Sheriff\'s office', 'Mayberry', 'NC', 'RFD'),
+            null,
+            new PatientName('Griffith', 'Andrew', 'Sheriff'),
+            PatientSex.Male,
+            PatientRace.White,
+            PatientEthnicity.NotHispanicOrLatino,
+            [new PatientEmailContact('andy@mayberrypd.gov'), new PatientPhoneContact('555', '123.4567'), new PatientPhoneContact('555', '765-4321')],
+            new PatientSymptomatic(PatientSymptomaticDeclaration.Symptomatic, null)
+        )
+        const testKit = new TestKit('Your Test Kit ID', new Date(), new Date())
+
+        const positiveTestResult = new TestResult(
+            '94558-4',
+            'SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay',
+            '10811877011337_DIT',
+            new Date(),
+            new TestResultCode('260373001', 'Detected'),
+            TestResultAbnormalFlagsCode.Detected,
+            CodingSystem.LOINC_271)
+
+        const builder: HL7MessageBuilder = new HL7MessageBuilder(
+            new TestHubProvider(), labInfo, patientTest, testKit, patient, [positiveTestResult])
+        const message: string = builder.buildMessage();
+
+        const segments: string[] = message.split('\n');
+
+        const hl7MshRegex = /MSH\|\^~\\&\|AbbottInformatics\^2\.16\.840\.1\.113883\.3\.8589\.4\.1\.22\^ISO\|AbbottInformatics\^00Z0000002\^CLIA\|AIMS\.INTEGRATION\.STG\^2\.16\.840\.1\.114222\.4\.3\.15\.2\^ISO\|AIMS\.PLATFORM\^2\.16\.840\.1\.114222\.4\.1\.217446\^ISO\|\d{14}-\d{4}\|\|ORU\^R01\^ORU_R01\|\d{14}-\d{4}_Your Test Kit ID\|T\|2\.5\.1\|\|\|NE\|NE\|\|\|\|\|PHLabReport-NoAck\^ELR251R1_Rcvr_Prof\^2\.16\.840\.1\.113883\.9\.11\^ISO/;
+        const obrRegex = /OBR\|1\|\|Your Test Kit ID\^\^2\.16\.840\.1\.113883\.3\.8589\.4\.1\.22\^ISO\|94558-4\^SARS-CoV-2 \(COVID-19\) Ag \[Presence\] in Respiratory specimen by Rapid immunoassay\^LN\^\^\^\^2\.71\|\|\|\d{14}-\d{4}\|\|\|\|\|\|\|\|\|\^\^SA\.Proctor\|\|\|\|\|\|\d{14}-\d{4}\|\|\|F/
+        const obx1Regex = /OBX\|1\|CWE\|94558-4\^SARS-CoV-2 \(COVID-19\) Ag \[Presence\] in Respiratory specimen by Rapid immunoassay\^LN\^\^\^\^2\.71\|\|260373001\^Detected\^SCT\^\^\^\^20210301\|\|\|A\^Abnormal\^HL70078\^\^\^\^2\.5\.1\|\|\|F\|\|\|\|00Z0000016\|\|10811877011337_DIT\^\^99ELR\^\^\^\^Vunknown\|\|\d{14}-\d{4}||||SA\.Proctor\^\^\^\^\^&2\.16\.840\.1\.113883\.3\.8589\.4\.1\.152&ISO\^XX\^\^\^00Z0000016\|13 Fake AtHome Test Street\^\^Fake City\|/
+        test('Segments pass muster', () => {
+            expect(segments[0]).toMatch(hl7MshRegex);
+
+
+            expect(segments[2]).toBe(`PID|1||YOUR_PATIENT_ID^^^&2.16.840.1.113883.3.8589.4.1.22&ISO^PI||Griffith^Andrew^Sheriff|||M||2106-3^White^HL70005^^^^2.5.1|1 Main Street^Sheriff's office^Mayberry^NC^00000^^^^RFD||^^Internet^andy@mayberrypd.gov^^^~^^PH^^^555^123.4567~^^PH^^^555^765.4321|||||||||N^Not Hispanic or Latino^HL70189^^^^2.5.1`);
+            expect(segments[3]).toBe(`ORC|RE||Your Test Kit ID^^2.16.840.1.113883.3.8589.4.1.22^ISO|||||||||^^SA.Proctor|||||||||SA.Proctor|1 Main Street^Sheriff's office^Mayberry^NC^00000^^^^RFD|^^PH^^^555^123.4567|`);
+            expect(segments[4]).toMatch(obrRegex);
+            expect(segments[5]).toMatch(obx1Regex);
+            expect(segments[6]).toBe('NTE|1|L|10811877011337_DIT');
+            expect(segments[7]).toBe('OBX|2|NM|35659-2^Age at specimen collection^LN^^^^2.71||28|a^year^UCUM^^^^2.1|||||F||||00Z0000016||||||||SA.Proctor^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^00Z0000016|13 Fake AtHome Test Street^^Fake City|||||QST');
+            expect(segments[8]).toMatch(/^OBX\|3/)
+            expect(segments[9]).toMatch(/^SPM\|1\|\^Your Test Kit ID&&2\.16\.840\.1\.113883\.3\.8589\.4\.1\.22&ISO\|\|697989009\^Anterior nares swab \(specimen\)\^SCT\^\^\^\^20210301\|\|\|\|\|\|\|\|\|\|\|\|\|\d{14}-\d{4}\|\d{14}-\d{4}/);
+        });
+    })
+
+    describe('should include symptomatic information of known onset', () => {
+        const labInfo = new MarsLabInfo(
+            new IsoHierarchicDesignator(
+                'AbbottInformatics',
+                '2.16.840.1.113883.3.8589.4.1.22'
+            ),
+            new CliaHierarchicDesignator(
+                'AbbottInformatics',
+                '00Z0000002'
+            ));
+        const patientTest = new Test('94558-4',
+            'SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay',
+            PerformingOrganization.OtcProctor,
+            SpecimenCollectionType.AnteriorNaresSwab,
+            CodingSystem.LOINC_271);
+
+        const patientAge: number = 28
+        const patient = new Patient(
+            'YOUR_PATIENT_ID',
+            patientAge,
+            new ExtendedAddress('00000', '1 Main Street', 'Sheriff\'s office', 'Mayberry', 'NC', 'RFD'),
+            null,
+            new PatientName('Griffith', 'Andrew', 'Sheriff'),
+            PatientSex.Male,
+            PatientRace.White,
+            PatientEthnicity.NotHispanicOrLatino,
+            [new PatientEmailContact('andy@mayberrypd.gov'), new PatientPhoneContact('555', '123.4567'), new PatientPhoneContact('555', '765-4321')],
+            new PatientSymptomatic(PatientSymptomaticDeclaration.Symptomatic, new Date())
+        )
+        const testKit = new TestKit('Your Test Kit ID', new Date(), new Date())
+
+        const positiveTestResult = new TestResult(
+            '94558-4',
+            'SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay',
+            '10811877011337_DIT',
+            new Date(),
+            new TestResultCode('260373001', 'Detected'),
+            TestResultAbnormalFlagsCode.Detected,
+            CodingSystem.LOINC_271)
+
+        const builder: HL7MessageBuilder = new HL7MessageBuilder(
+            new TestHubProvider(), labInfo, patientTest, testKit, patient, [positiveTestResult])
+        const message: string = builder.buildMessage();
+
+        const segments: string[] = message.split('\n');
+
+        const hl7MshRegex = /MSH\|\^~\\&\|AbbottInformatics\^2\.16\.840\.1\.113883\.3\.8589\.4\.1\.22\^ISO\|AbbottInformatics\^00Z0000002\^CLIA\|AIMS\.INTEGRATION\.STG\^2\.16\.840\.1\.114222\.4\.3\.15\.2\^ISO\|AIMS\.PLATFORM\^2\.16\.840\.1\.114222\.4\.1\.217446\^ISO\|\d{14}-\d{4}\|\|ORU\^R01\^ORU_R01\|\d{14}-\d{4}_Your Test Kit ID\|T\|2\.5\.1\|\|\|NE\|NE\|\|\|\|\|PHLabReport-NoAck\^ELR251R1_Rcvr_Prof\^2\.16\.840\.1\.113883\.9\.11\^ISO/;
+        const obrRegex = /OBR\|1\|\|Your Test Kit ID\^\^2\.16\.840\.1\.113883\.3\.8589\.4\.1\.22\^ISO\|94558-4\^SARS-CoV-2 \(COVID-19\) Ag \[Presence\] in Respiratory specimen by Rapid immunoassay\^LN\^\^\^\^2\.71\|\|\|\d{14}-\d{4}\|\|\|\|\|\|\|\|\|\^\^SA\.Proctor\|\|\|\|\|\|\d{14}-\d{4}\|\|\|F/
+        const obx1Regex = /OBX\|1\|CWE\|94558-4\^SARS-CoV-2 \(COVID-19\) Ag \[Presence\] in Respiratory specimen by Rapid immunoassay\^LN\^\^\^\^2\.71\|\|260373001\^Detected\^SCT\^\^\^\^20210301\|\|\|A\^Abnormal\^HL70078\^\^\^\^2\.5\.1\|\|\|F\|\|\|\|00Z0000016\|\|10811877011337_DIT\^\^99ELR\^\^\^\^Vunknown\|\|\d{14}-\d{4}||||SA\.Proctor\^\^\^\^\^&2\.16\.840\.1\.113883\.3\.8589\.4\.1\.152&ISO\^XX\^\^\^00Z0000016\|13 Fake AtHome Test Street\^\^Fake City\|/
+        test('Segments pass muster', () => {
+            expect(segments[0]).toMatch(hl7MshRegex);
+
+
+            expect(segments[2]).toBe(`PID|1||YOUR_PATIENT_ID^^^&2.16.840.1.113883.3.8589.4.1.22&ISO^PI||Griffith^Andrew^Sheriff|||M||2106-3^White^HL70005^^^^2.5.1|1 Main Street^Sheriff's office^Mayberry^NC^00000^^^^RFD||^^Internet^andy@mayberrypd.gov^^^~^^PH^^^555^123.4567~^^PH^^^555^765.4321|||||||||N^Not Hispanic or Latino^HL70189^^^^2.5.1`);
+            expect(segments[3]).toBe(`ORC|RE||Your Test Kit ID^^2.16.840.1.113883.3.8589.4.1.22^ISO|||||||||^^SA.Proctor|||||||||SA.Proctor|1 Main Street^Sheriff's office^Mayberry^NC^00000^^^^RFD|^^PH^^^555^123.4567|`);
+            expect(segments[4]).toMatch(obrRegex);
+            expect(segments[5]).toMatch(obx1Regex);
+            expect(segments[6]).toBe('NTE|1|L|10811877011337_DIT');
+            expect(segments[7]).toBe('OBX|2|NM|35659-2^Age at specimen collection^LN^^^^2.71||28|a^year^UCUM^^^^2.1|||||F||||00Z0000016||||||||SA.Proctor^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^00Z0000016|13 Fake AtHome Test Street^^Fake City|||||QST');
+            expect(segments[8]).toMatch(/^OBX\|3/)
+            expect(segments[9]).toMatch(/^OBX\|4/)
+            expect(segments[10]).toMatch(/^SPM\|1\|\^Your Test Kit ID&&2\.16\.840\.1\.113883\.3\.8589\.4\.1\.22&ISO\|\|697989009\^Anterior nares swab \(specimen\)\^SCT\^\^\^\^20210301\|\|\|\|\|\|\|\|\|\|\|\|\|\d{14}-\d{4}\|\d{14}-\d{4}/);
+        });
+    })
+
+    describe('should include unknown symptomatic', () => {
+        const labInfo = new MarsLabInfo(
+            new IsoHierarchicDesignator(
+                'AbbottInformatics',
+                '2.16.840.1.113883.3.8589.4.1.22'
+            ),
+            new CliaHierarchicDesignator(
+                'AbbottInformatics',
+                '00Z0000002'
+            ));
+        const patientTest = new Test('94558-4',
+            'SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay',
+            PerformingOrganization.OtcProctor,
+            SpecimenCollectionType.AnteriorNaresSwab,
+            CodingSystem.LOINC_271);
+
+        const patientAge: number = 28
+        const patient = new Patient(
+            'YOUR_PATIENT_ID',
+            patientAge,
+            new ExtendedAddress('00000', '1 Main Street', 'Sheriff\'s office', 'Mayberry', 'NC', 'RFD'),
+            null,
+            new PatientName('Griffith', 'Andrew', 'Sheriff'),
+            PatientSex.Male,
+            PatientRace.White,
+            PatientEthnicity.NotHispanicOrLatino,
+            [new PatientEmailContact('andy@mayberrypd.gov'), new PatientPhoneContact('555', '123.4567'), new PatientPhoneContact('555', '765-4321')],
+            new PatientSymptomatic(PatientSymptomaticDeclaration.Unknown, null)
+        )
+        const testKit = new TestKit('Your Test Kit ID', new Date(), new Date())
+
+        const positiveTestResult = new TestResult(
+            '94558-4',
+            'SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay',
+            '10811877011337_DIT',
+            new Date(),
+            new TestResultCode('260373001', 'Detected'),
+            TestResultAbnormalFlagsCode.Detected,
+            CodingSystem.LOINC_271)
+
+        const builder: HL7MessageBuilder = new HL7MessageBuilder(
+            new TestHubProvider(), labInfo, patientTest, testKit, patient, [positiveTestResult])
+        const message: string = builder.buildMessage();
+
+        const segments: string[] = message.split('\n');
+
+        const hl7MshRegex = /MSH\|\^~\\&\|AbbottInformatics\^2\.16\.840\.1\.113883\.3\.8589\.4\.1\.22\^ISO\|AbbottInformatics\^00Z0000002\^CLIA\|AIMS\.INTEGRATION\.STG\^2\.16\.840\.1\.114222\.4\.3\.15\.2\^ISO\|AIMS\.PLATFORM\^2\.16\.840\.1\.114222\.4\.1\.217446\^ISO\|\d{14}-\d{4}\|\|ORU\^R01\^ORU_R01\|\d{14}-\d{4}_Your Test Kit ID\|T\|2\.5\.1\|\|\|NE\|NE\|\|\|\|\|PHLabReport-NoAck\^ELR251R1_Rcvr_Prof\^2\.16\.840\.1\.113883\.9\.11\^ISO/;
+        const obrRegex = /OBR\|1\|\|Your Test Kit ID\^\^2\.16\.840\.1\.113883\.3\.8589\.4\.1\.22\^ISO\|94558-4\^SARS-CoV-2 \(COVID-19\) Ag \[Presence\] in Respiratory specimen by Rapid immunoassay\^LN\^\^\^\^2\.71\|\|\|\d{14}-\d{4}\|\|\|\|\|\|\|\|\|\^\^SA\.Proctor\|\|\|\|\|\|\d{14}-\d{4}\|\|\|F/
+        const obx1Regex = /OBX\|1\|CWE\|94558-4\^SARS-CoV-2 \(COVID-19\) Ag \[Presence\] in Respiratory specimen by Rapid immunoassay\^LN\^\^\^\^2\.71\|\|260373001\^Detected\^SCT\^\^\^\^20210301\|\|\|A\^Abnormal\^HL70078\^\^\^\^2\.5\.1\|\|\|F\|\|\|\|00Z0000016\|\|10811877011337_DIT\^\^99ELR\^\^\^\^Vunknown\|\|\d{14}-\d{4}||||SA\.Proctor\^\^\^\^\^&2\.16\.840\.1\.113883\.3\.8589\.4\.1\.152&ISO\^XX\^\^\^00Z0000016\|13 Fake AtHome Test Street\^\^Fake City\|/
+        test('Segments pass muster', () => {
+            expect(segments[0]).toMatch(hl7MshRegex);
+
+
+            expect(segments[2]).toBe(`PID|1||YOUR_PATIENT_ID^^^&2.16.840.1.113883.3.8589.4.1.22&ISO^PI||Griffith^Andrew^Sheriff|||M||2106-3^White^HL70005^^^^2.5.1|1 Main Street^Sheriff's office^Mayberry^NC^00000^^^^RFD||^^Internet^andy@mayberrypd.gov^^^~^^PH^^^555^123.4567~^^PH^^^555^765.4321|||||||||N^Not Hispanic or Latino^HL70189^^^^2.5.1`);
+            expect(segments[3]).toBe(`ORC|RE||Your Test Kit ID^^2.16.840.1.113883.3.8589.4.1.22^ISO|||||||||^^SA.Proctor|||||||||SA.Proctor|1 Main Street^Sheriff's office^Mayberry^NC^00000^^^^RFD|^^PH^^^555^123.4567|`);
+            expect(segments[4]).toMatch(obrRegex);
+            expect(segments[5]).toMatch(obx1Regex);
+            expect(segments[6]).toBe('NTE|1|L|10811877011337_DIT');
+            expect(segments[7]).toBe('OBX|2|NM|35659-2^Age at specimen collection^LN^^^^2.71||28|a^year^UCUM^^^^2.1|||||F||||00Z0000016||||||||SA.Proctor^^^^^&2.16.840.1.113883.3.8589.4.1.152&ISO^XX^^^00Z0000016|13 Fake AtHome Test Street^^Fake City|||||QST');
+            expect(segments[8]).toMatch(/^OBX\|3/)
+            expect(segments[8]).toMatch(/UNK\^Unknown\^NULLFL\^\^\^\^2.0.0/)
+            expect(segments[9]).toMatch(/^SPM\|1\|\^Your Test Kit ID&&2\.16\.840\.1\.113883\.3\.8589\.4\.1\.22&ISO\|\|697989009\^Anterior nares swab \(specimen\)\^SCT\^\^\^\^20210301\|\|\|\|\|\|\|\|\|\|\|\|\|\d{14}-\d{4}\|\d{14}-\d{4}/);
+        });
     })
 
     describe('should build correct non-symptomatic HL7 message', () => {

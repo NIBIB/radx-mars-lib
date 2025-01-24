@@ -31,10 +31,10 @@ export default class CodingSystem {
   static readonly HL70005_251: CodingSystem = new CodingSystem('HL70005', '2.5.1')
   static readonly HL70078_251: CodingSystem = new CodingSystem('HL70078', '2.5.1')
   static readonly HL70189_251: CodingSystem = new CodingSystem('HL70189', '2.5.1')
-  // eslint-disable-next-line max-len
   static readonly N99ELR_VUNKNOWN: CodingSystem = new CodingSystem('99ELR', 'Vunknown')
   static readonly HL720005_300: CodingSystem = new CodingSystem('HL720005', '3.0.0')
   static readonly HL720189_210: CodingSystem = new CodingSystem('HL720189', '2.1.0')
+  static readonly NULLFL_200: CodingSystem = new CodingSystem('NULLFL', '2.0.0')
   /**
    * Generates an HL7 compatible string of the code system.  BEWARE, this
    * representation assumes there are 3 fields/subfields separating the code

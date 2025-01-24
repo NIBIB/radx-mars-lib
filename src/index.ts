@@ -24,6 +24,10 @@ import PatientName from './models/PatientName'
 import PatientPhoneContact from './models/PatientPhoneContact'
 import PatientRace from './models/PatientRace'
 import PatientSex from './models/PatientSex'
+import {
+  PatientSymptomatic,
+  PatientSymptomaticDeclaration
+} from './models/PatientSymptomatic'
 import PerformingOrganization from './models/PerformingOrganization'
 import SpecimenCollectionType from './models/SpecimenCollectionType'
 import Test from './models/Test'
@@ -49,6 +53,8 @@ export {
   PatientPhoneContact,
   PatientRace,
   PatientSex,
+  PatientSymptomatic,
+  PatientSymptomaticDeclaration,
   PerformingOrganization,
   SpecimenCollectionType,
   Test,

@@ -9,6 +9,7 @@ import PatientPhoneContact from '../../models/PatientPhoneContact'
 import CodingSystem from '../../models/CodingSystem'
 import { type NullableString } from '../../models/NullableString'
 import type PatientContact from '../../models/PatientContact'
+import { PatientSymptomaticDeclaration } from '../../models/PatientSymptomatic'
 
 /**
  * The {HL7MessageBuilder} class constructs an HL7 message from the provided
@@ -283,12 +284,12 @@ export default class HL7MessageBuilder {
         'OBX',
         (i + 1).toString(),
         'CWE',
-        this._testResults[0].asHl7String(),
+        this._testResults[i].asHl7String(),
         '',
-        this._testResults[0].testResultCode.asHl7String('^'),
+        this._testResults[i].testResultCode.asHl7String('^'),
         '',
         '',
-        this._testResults[0].testResultAbnormalFlagsCode.asHl7String('^'),
+        this._testResults[i].testResultAbnormalFlagsCode.asHl7String('^'),
         '',
         '', // 10
         'F',
@@ -297,9 +298,9 @@ export default class HL7MessageBuilder {
         '', // `14`,
         this._test.performingOrganization.id,
         '', // `16`,
-        `${this._testResults[0].deviceIdentifier}^^${CodingSystem.N99ELR_VUNKNOWN.asHl7String('^')}`,
+        `${this._testResults[i].deviceIdentifier}^^${CodingSystem.N99ELR_VUNKNOWN.asHl7String('^')}`,
         '', // `18`,
-        formatDate(this._testResults[0].determinationDate),
+        formatDate(this._testResults[i].determinationDate),
         '', // `20`,
         '', // `21`,
         '', // `22`,
@@ -315,7 +316,7 @@ export default class HL7MessageBuilder {
         'NTE',
         (i + 1).toString(),
         'L',
-        this._testResults[0].deviceIdentifier
+        this._testResults[i].deviceIdentifier
       ].join('|')
 
       resultSegments.push(nteSegment)
@@ -362,21 +363,29 @@ export default class HL7MessageBuilder {
     // it's unknown.  I mean, we could, but...  We could also flag it -- and
     // maybe we will -- as the patient is symptomatic, asymptomatic, or unknown
     // and do some sort of enum check.
-    const didPatientReportSymptomatic = false
-    if (!didPatientReportSymptomatic) {
+    if (this._patient.symptomatic == null) {
       return resultSegments
     }
 
-    const isPatientSymptomatic = false
-
+    let isPatientSymptomatic = false
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    let obx3_5_symptomatic = `N^no^${CodingSystem.HL70078_251.asHl7String()}`
-    if (isPatientSymptomatic) {
-      obx3_5_symptomatic = `Y^Yes^${CodingSystem.HL70078_251.asHl7String()}`
+    let obx3_5_symptomatic: string = ''
+    switch (this._patient.symptomatic.isSymptomatic) {
+      case PatientSymptomaticDeclaration.Symptomatic:
+        isPatientSymptomatic = true
+        obx3_5_symptomatic = `Y^Yes^${CodingSystem.HL70078_251.asHl7String()}`
+        break
+      case PatientSymptomaticDeclaration.NotSymptomatic:
+        obx3_5_symptomatic = `N^no^${CodingSystem.HL70078_251.asHl7String()}`
+        break
+      case PatientSymptomaticDeclaration.Unknown:
+        obx3_5_symptomatic = `UNK^Unknown^${CodingSystem.NULLFL_200.asHl7String()}`
+        break
     }
+
     const obxSymptomaticSegment = [
       'OBX',
-      `${this._testResults.length + 1}`,
+      `${this._testResults.length + 2}`,
       'CWE',
       // eslint-disable-next-line max-len
       `95419-8^Whether the patient has symptoms related to condition of interest^${CodingSystem.LOINC_271.asHl7String()}`,
@@ -411,7 +420,7 @@ export default class HL7MessageBuilder {
 
     resultSegments.push(obxSymptomaticSegment)
 
-    const symptomOnsetDate: Date | null = null
+    const symptomOnsetDate: Date | null = this._patient.symptomatic.symptomOnsetDate
     if (!isPatientSymptomatic || symptomOnsetDate == null) {
       return resultSegments
     }
@@ -419,7 +428,7 @@ export default class HL7MessageBuilder {
     const obxSystemOnsetDateStr: string = formatShortDate(symptomOnsetDate)
     const obxSymptomOnsetSegment = [
       'OBX',
-      `${this._testResults.length + 1}`,
+      `${this._testResults.length + 3}`,
       'DT',
       `65222-2^Date and time of symptom onset^${CodingSystem.LOINC_271.asHl7String()}`,
       '',

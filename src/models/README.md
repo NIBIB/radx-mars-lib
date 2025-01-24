@@ -14,10 +14,12 @@ future implementations may want/need to enforce validation and would require
 refactoring of readonly member variables.  We went ahead and laid the groundwork
 for that effort.
 
-Enums are not used.  This is done because for the values that may be enumerated,
-they're also not finite and are subject to change.  We do not want to force a
-library upgrade because a string changed and would rather allow the user to
-create new instances.  As such, we use classes for type safety.
+Enums are generally not used.  This is done because for the values that may be 
+enumerated, they're also not finite and are subject to change.  We do not want
+to force a library upgrade because a string changed and would rather allow the
+user to create new instances.  As such, we use classes for type safety unless
+such a scenario exists that they values may be finite; (yes|no|unknown) for
+instance.
 
 We're explicitly requiring the user to enter all parameters requested.  That is
 to say we're asking for them for a reason and you need to declare your intention

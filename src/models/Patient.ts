@@ -4,10 +4,14 @@ import type PatientName from './PatientName'
 import type PatientRace from './PatientRace'
 import type PatientSex from './PatientSex'
 import type PatientContact from './PatientContact'
+// PatientEmailContact included for type hinting
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type PatientEmailContact from './PatientEmailContact'
 import PatientPhoneContact from './PatientPhoneContact'
 import { type NullableString } from './NullableString'
 import { formatShortDate } from '../utils/DateUtils'
 import type HierarchicDesignator from './HierarchicDesignator'
+import { type PatientSymptomatic } from './PatientSymptomatic'
 
 /**
  * Represents the subject of a test.  Corresponds predominately to the PID
@@ -24,6 +28,7 @@ export default class Patient {
   private readonly _sex: PatientSex | null
   private readonly _race: PatientRace | null
   private readonly _ethnicity: PatientEthnicity | null
+  private _symptomatic: PatientSymptomatic | null
 
   public get patientContacts (): PatientContact[] { return this._patientContacts }
   public get id (): string { return this._id }
@@ -34,6 +39,7 @@ export default class Patient {
   public get sex (): PatientSex | null { return this._sex }
   public get race (): PatientRace | null { return this._race }
   public get ethnicity (): PatientEthnicity | null { return this._ethnicity }
+  public get symptomatic (): PatientSymptomatic | null { return this._symptomatic }
 
   /**
    * @param {string} id - The unique ID for the patient in your system.
@@ -47,6 +53,10 @@ export default class Patient {
    * @param {PatientContact[]|null} patientContacts - Means by which the
    * patient may be contacted.  See {@link PatientEmailContact} or
    * {@link PatientPhoneContact}
+   * @param {PatientSymptomatic|null} symptomatic - Whether or not the patient
+   * has reported symptomatic and, if so, on what date. Defaults to null and
+   * can be added via the setter {@link setPatientSymptomatic}. See
+   * {@link PatientSymptomatic} for usage.
    */
   constructor (
     id: string,
@@ -57,7 +67,8 @@ export default class Patient {
     sex: PatientSex | null,
     race: PatientRace | null,
     ethnicity: PatientEthnicity | null,
-    patientContacts: PatientContact[] | null
+    patientContacts: PatientContact[] | null,
+    symptomatic: PatientSymptomatic | null = null
   ) {
     if (!id) {
       throw new Error('You must supply a non-empty ID')
@@ -88,10 +99,15 @@ export default class Patient {
     }
 
     this._patientContacts = patientContacts ?? []
+    this._symptomatic = symptomatic
   }
 
   public addContact (contactToAdd: PatientContact): void {
     this._patientContacts.push(contactToAdd)
+  }
+
+  public setPatientSymptomatic (symptomatic: PatientSymptomatic): void {
+    this._symptomatic = symptomatic
   }
 
   public asHl7String (sendingSystem: HierarchicDesignator, separator: string = '|'): string {
