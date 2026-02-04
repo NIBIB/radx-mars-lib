@@ -15,8 +15,7 @@ describe('Patient and Patient Segments', () => {
   it('calculates age correctly from date of birth though you should do this yourself', () => {
     let date = new Date()
     date.setFullYear(date.getFullYear() - 50);
-    date.setMonth(date.getMonth() - 11)
-    date.setDate(date.getDate() - 29)
+    date.setDate(date.getDate() - 2)
     const patient = new Patient(
       'YOUR_PATIENT_ID',
       null,
