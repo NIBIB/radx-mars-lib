@@ -1,14 +1,18 @@
 # radx-mars-lib
 
+- *This repository has been archived and is no longer maintained.*
+- *The code is provided for historical reference and may contain unpatched or unknown vulnerabilities.*
+- *It should not be used in production systems.*
+
 ## Overview
 This library provides a set of core classes and interfaces to simplify the
 creation and delivery of HL7 ELR 2.5.1 messages to a RADx MARS Hub.  
 
 For information about the RADx MARS Program, please
-[visit here](https://www.nibib.nih.gov/covid-19/radx-tech-program/mars)
+[visit here](https://web.archive.org/web/20260207233056/https://www.nibib.nih.gov/programs/radx-tech-program/mars)
 
 For basic information about HL7, specifically HL7 that is relevant to the
-[HL7v2 Implementation Guide](https://www.nibib.nih.gov/covid-19/radx-tech-program/mars/HL7v2-implementation-guide),
+[HL7v2 Implementation Guide](https://web.archive.org/web/20250908105301/https://www.nibib.nih.gov/programs/radx-tech-program/mars/HL7v2-implementation-guide),
 you can get an overview [here](./src/utils/hl7/README.md)
 
 ## Implementations and Extensions
@@ -22,5 +26,5 @@ We also provide a sample of how to orchestrate a MARS Hub Client at
 [radx-mars-demo](https://github.com/NIBIB/radx-mars-lib)
 
 If you are looking to begin reporting your test results as part of participation
-in the [RADx MARS Program](https://www.nibib.nih.gov/covid-19/radx-tech-program/mars),
+in the [RADx MARS Program](https://web.archive.org/web/20260405122809/https://www.nibib.nih.gov/programs/radx-tech-program/mars),
 we suggest you start with the demo.
